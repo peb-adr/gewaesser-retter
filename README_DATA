@@ -1,0 +1,13 @@
+Work in progress:
+
+publicId: unique identifier
+name: display name
+type:
+ * trash : collected trash
+ * action: a trash collection event
+done:
+ * to indicate whether an action has terminated
+date: data entry time (ISO)
+planned: for actions: date of action
+url: external url to show details not in database (e.g. contacts)
+
