@@ -1,0 +1,48 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature",
+      "properties": {
+        "publicId": 1,
+        "name": "Nonnenhof",
+        "type": "trash",
+        "date": "2022-01-01T08:00:00Z",
+        "url": "www.example.com"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [ 13.125853985158278, 53.449705600431997 ]
+      }
+    },
+    { "type": "Feature",
+      "properties": {
+        "publicId": 2,
+        "name": "Intergalaktische Müllsammler:innen im Mai",
+        "type": "action",
+        "done": false,
+        "date": "2022-01-01T08:00:00Z",
+        "planned": "2022-05-15T16:30:00Z",
+        "url": "www.example.com"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [ 11.5, 54 ]
+      }
+    },
+    { "type": "Feature",
+      "properties": {
+        "publicId": 2,
+        "name": "Intergalaktische Müllsammler:innen im März",
+        "type": "action",
+        "done": true,
+        "date": "2022-03-04T16:45:00Z",
+        "planned": "2022-03-04T16:30:00Z",
+        "url": "www.example.com"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [ 11.501, 54.005 ]
+      }
+    }
+  ]
+}
