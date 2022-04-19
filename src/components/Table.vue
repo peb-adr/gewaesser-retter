@@ -24,8 +24,20 @@ export default {
   }
   watch: {
     trashData() {
+      this.currentData =
+        this.trashData.features.map(f => f.properties);
+
+      console.log(this.currentData);
       }
+  },
+  mounted() {
+    if (!this.trashData || !this.trashData.features) {
+      this.currentData = [];
+    } else {
+      this.currentData = this.trashData.features.map(
+        f => f.properties);
     }
+  }
 }
 
 </script>

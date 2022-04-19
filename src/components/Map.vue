@@ -7,6 +7,9 @@ import * as L from "leaflet";
 import "../../node_modules/leaflet/dist/leaflet.css";
 
 export default {
+  props: {
+    trashData: Object
+  },
   data: () => ({
     osm: new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 16,
@@ -14,11 +17,19 @@ export default {
         'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }),
     map: null,
-    trashData: {}
+    layergroup: L.featureGroup(),
+    geojsondata: null,
   }),
+  watch: {
+    trashData() {
+      this.layergroup.clearLayers();
+      this.geojsondata = L.geoJSON(this.trashData);
+      this.layergroup.addLayer(this.geojsondata);
+    }
+  },
   mounted() {
     this.map = L.map("mapId", {
-      attributionControl: false,
+      attributionControl: true,
       center: [48.5, 10.5],
       zoom: 5,
       maxZoom: 16,
@@ -27,7 +38,7 @@ export default {
       zoomControl: false,
     });
     this.osm.addTo(this.map);
-    this.fetchDummyData();
+    this.layergroup.addTo(this.map);
   },
   methods: {
     fetchDummyData() {
@@ -55,6 +66,6 @@ export default {
 </script>
 <style>
 .map {
-  height: 90vh;
+  height: 80vh;
 }
 </style>

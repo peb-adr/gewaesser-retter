@@ -10,10 +10,10 @@
       </v-tab>
       <v-tabs-items v-model="tab">
         <v-tab-item>
-          <Map :data="trashData" />
+          <Map v-bind:trashData="trashData" />
         </v-tab-item>
         <v-tab-item>
-          <Table :data="trashData" />
+          <Table v-bind:trashData="trashData" />
         </v-tab-item>
       </v-tabs-items>
     </v-tabs>
@@ -34,7 +34,25 @@ export default {
   data: () => ({
     trashData: {},
     tab: null,
-  })
+  }),
+  mounted() {
+    this.fetchDummyData();
+  },
+  methods: {
+    fetchDummyData() {
+      fetch("dummydata.json").then((response) => {
+        response.json().then((data) => {
+          const features = data.features.filter(
+            (f) => f.geometry && f.geometry.coordinates.length
+          );
+          this.trashData = {
+            type: "FeatureCollection",
+            features: features,
+          };
+        });
+      });
+    }
+  }
 }
 
 </script>
