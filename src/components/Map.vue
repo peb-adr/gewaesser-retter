@@ -17,14 +17,11 @@ export default {
         'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }),
     map: null,
-    layergroup: L.featureGroup(),
-    geojsondata: null,
+    layergroup: L.featureGroup()
   }),
   watch: {
     trashData() {
-      this.layergroup.clearLayers();
-      this.geojsondata = L.geoJSON(this.trashData);
-      this.layergroup.addLayer(this.geojsondata);
+      this.buildData();
     }
   },
   mounted() {
@@ -39,28 +36,52 @@ export default {
     });
     this.osm.addTo(this.map);
     this.layergroup.addTo(this.map);
+    this.buildData();
   },
   methods: {
-    fetchDummyData() {
-      fetch("dummydata.json").then((response) => {
-        response.json().then((data) => {
-          const features = data.features.filter(
-            (f) => f.geometry && f.geometry.coordinates.length
-          );
-          this.trashData = {
-            trash: {
-              type: "FeatureCollection",
-              features: features.filter((f) => f.properties.type === "trash"),
-            },
-            trashaction: {
-              type: "FeatureCollection",
-              features: features.filter((f) => f.properties.type === "action"),
-            },
-          };
+    buildData() {
+      this.layergroup.clearLayers();
+      const categories = [
+        {
+          featureFilter: f => f.properties.type === 'trash',
+          iconUrl: 'trash-blue.png'
+        },
+        {
+          featureFilter: f => f.properties.type === 'action' && f.properties.done,
+          iconUrl: 'trash-green.png'
+        },
+        {
+          featureFilter: f => f.properties.type === 'action' && !f.properties.done,
+          iconUrl: 'trash-red.png'
+        }
+      ]
+      for (const category of categories ) {
+        const json = {
+          "type": "FeatureCollection",
+          "features": this.trashData.features.filter(category.featureFilter)
+        };
+        const layer = L.geoJSON(json, {
+          pointToLayer: function(feature, latlng) {
+            return L.marker(latlng, {
+              icon: L.icon({
+                iconUrl: category.iconUrl,
+                iconSize: [24, 28],
+                iconAnchor: [12, 14]
+              })
+            });
+          },
+          onEachFeature: function(feature, layer) {
+            layer.bindTooltip(
+              String("<b>" + feature.properties["name"] + "</b>"), {
+                direction: "right",
+                offset: [32, 18]
+              });
+          }
         });
-      });
+        this.layergroup.addLayer(layer);
+      }
     }
-   },
+  }
 };
 
 </script>
