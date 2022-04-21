@@ -3,7 +3,12 @@
     {{ item.name }} <br/> <v-btn @click="zoomTo()">zoom </v-btn>
     {{ item.type }} <br/>
     {{ item.date }} <br/>
-    <iframe v-if="item.url" :src="item.url" class="info-iframe"/>
+    <iframe
+      v-if="item.url"
+      :src="item.url"
+      class="info-iframe"
+      frameBorder="0"
+    />
   </div>
 
 </template>
