@@ -10,10 +10,16 @@
       </v-tab>
       <v-tabs-items v-model="tab">
         <v-tab-item>
-          <Map v-bind:trashData="trashData" />
+          <Map
+            v-bind:trashData="trashData"
+            v-bind:infoItem="infoItem"
+            v-on:update:mapitem="updateItem"
+          />
         </v-tab-item>
         <v-tab-item>
-          <Table v-bind:trashData="trashData" />
+          <Table
+          v-bind:trashData="trashData"
+        />
         </v-tab-item>
       </v-tabs-items>
     </v-tabs>
@@ -33,6 +39,7 @@ export default {
   },
   data: () => ({
     trashData: {},
+    infoItem: null,
     tab: null,
   }),
   mounted() {
@@ -51,6 +58,9 @@ export default {
           };
         });
       });
+    },
+    updateItem(e){
+      this.infoItem = e;
     }
   }
 }

@@ -1,14 +1,27 @@
 <template>
-  <div id="mapId" class="map" />
+  <div>
+    <div id="mapId" class="map" />
+    <div class="infomenu" v-if="infoItem">
+      <Infomenu
+        v-bind:infoItem="infoItem"
+        v-on:update:zoom="zoomTo"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
 import * as L from "leaflet";
 import "../../node_modules/leaflet/dist/leaflet.css";
+import Infomenu from "./Infomenu";
 
 export default {
+  components: {
+    Infomenu: Infomenu
+  },
   props: {
-    trashData: Object
+    trashData: Object,
+    infoItem: Object
   },
   data: () => ({
     osm: new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -35,12 +48,19 @@ export default {
       zoomControl: false,
     });
     this.osm.addTo(this.map);
+    this.map.on({
+      contextmenu: (evt) => console.log(evt)
+    });
     this.layergroup.addTo(this.map);
     this.buildData();
   },
   methods: {
+    zoomTo(coords){
+      this.map.setView([coords[1], coords[0]], 14);
+    },
     buildData() {
       this.layergroup.clearLayers();
+      const me = this;
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
@@ -76,6 +96,9 @@ export default {
                 direction: "right",
                 offset: [32, 18]
               });
+            layer.on("click", function(e) {
+              me.$emit('update:mapitem',e.sourceTarget.feature);
+            })
           }
         });
         this.layergroup.addLayer(layer);
@@ -89,4 +112,16 @@ export default {
 .map {
   height: 80vh;
 }
+
+.infomenu {
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+  background: rgb(255, 255, 255);
+  color: black;
+  z-index: 999;
+  width: 300x;
+  max-width: 300px;
+}
+
 </style>
