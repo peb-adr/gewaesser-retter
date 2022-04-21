@@ -19,6 +19,7 @@
         <v-tab-item>
           <Table
           v-bind:trashData="trashData"
+          v-on:update:mapitem="updateItem"
         />
         </v-tab-item>
       </v-tabs-items>
@@ -40,7 +41,7 @@ export default {
   data: () => ({
     trashData: {},
     infoItem: null,
-    tab: null,
+    tab: 0,
   }),
   mounted() {
     this.fetchDummyData();
@@ -61,6 +62,7 @@ export default {
     },
     updateItem(e){
       this.infoItem = e;
+      this.tab = 0;
     }
   }
 }

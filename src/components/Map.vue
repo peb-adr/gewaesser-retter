@@ -71,6 +71,7 @@ export default {
     });
     this.layergroup.addTo(this.map);
     this.buildData();
+    this.$root.$on('requestzoom', coords => this.zoomTo(coords));
   },
   methods: {
     zoomTo(coords){

@@ -40,8 +40,6 @@ export default {
     trashData() {
       this.currentData =
         this.trashData.features.map(f => f.properties);
-
-      console.log(this.currentData);
       }
   },
   mounted() {
@@ -50,6 +48,15 @@ export default {
     } else {
       this.currentData = this.trashData.features.map(
         f => f.properties);
+    }
+  },
+  methods: {
+    onDblClick(ev, ev2){
+      const item = this.trashData.features.find(t => t.properties === ev2.item);
+      if (item) {
+        this.$root.$emit('requestzoom', item.geometry.coordinates);
+        this.$emit('update:mapitem', item);
+      }
     }
   }
 }
