@@ -61,6 +61,7 @@ export default {
     buildData() {
       this.layergroup.clearLayers();
       const me = this;
+      if (!this.trashData.features) { return; }
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
