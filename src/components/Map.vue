@@ -7,6 +7,12 @@
         v-on:update:zoom="zoomTo"
       />
     </div>
+    <div class="contextmenu"
+      v-if="contextmenu"
+      ref="context"
+    >
+      <Contextmenu v-bind:latlng="contextlatlng" />
+    </div>
   </div>
 </template>
 
@@ -14,10 +20,12 @@
 import * as L from "leaflet";
 import "../../node_modules/leaflet/dist/leaflet.css";
 import Infomenu from "./Infomenu";
+import Contextmenu from "./Contextmenu";
 
 export default {
   components: {
-    Infomenu: Infomenu
+    Infomenu: Infomenu,
+    Contextmenu: Contextmenu
   },
   props: {
     trashData: Object,
@@ -30,7 +38,9 @@ export default {
         'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }),
     map: null,
-    layergroup: L.featureGroup()
+    layergroup: L.featureGroup(),
+    contextmenu: false,
+    contextcoords: []
   }),
   watch: {
     trashData() {
@@ -49,7 +59,15 @@ export default {
     });
     this.osm.addTo(this.map);
     this.map.on({
-      contextmenu: (evt) => console.log(evt)
+      contextmenu: (evt) => {
+        this.contextmenu = false;
+        this.contextmenu = true;
+        this.contextlatlng = evt.latlng;
+      },
+      click: () => {
+        this.contextmenu = false;
+        this.$emit('update:mapitem', null);
+      }
     });
     this.layergroup.addTo(this.map);
     this.buildData();
