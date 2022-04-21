@@ -12,6 +12,7 @@
     "core-js": "^3.6.5",
     "roboto-fontface": "*",
     "leaflet": "^1.7.1",
+    "leaflet.markercluster":"^1.5.3",
     "vue": "^2.6.11",
     "vuetify": "^2.6.0"
   },

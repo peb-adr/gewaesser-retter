@@ -18,6 +18,8 @@
 
 <script>
 import * as L from "leaflet";
+import "../../node_modules/leaflet.markercluster/dist/leaflet.markercluster.js";
+import "../../node_modules/leaflet.markercluster/dist/MarkerCluster.css";
 import "../../node_modules/leaflet/dist/leaflet.css";
 import Infomenu from "./Infomenu";
 import Contextmenu from "./Contextmenu";
@@ -81,6 +83,18 @@ export default {
       this.layergroup.clearLayers();
       const me = this;
       if (!this.trashData.features) { return; }
+      var clusterGroup = L.markerClusterGroup({
+        animate: true,
+        maxClusterRadius: 80,
+        iconCreateFunction: function () {
+          return L.icon({
+              iconUrl: "trash-blue-group.png",
+              iconSize: [24, 28],
+              iconAnchor: [12, 14]
+          });
+        }
+      });
+      this.layergroup.addLayer(clusterGroup);
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
@@ -121,7 +135,7 @@ export default {
             })
           }
         });
-        this.layergroup.addLayer(layer);
+        clusterGroup.addLayer(layer);
       }
     }
   }
