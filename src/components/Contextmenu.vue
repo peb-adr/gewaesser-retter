@@ -7,7 +7,7 @@
 <script>
 export default {
   props: {
-    latlng: Array
+    latlng: Object
   }
 };
 

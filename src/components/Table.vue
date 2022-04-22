@@ -1,8 +1,13 @@
 <template>
   <v-data-table
     :headers="tableHeader"
+    item-key="name"
     :items="currentData"
+    :single-select="true"
+    items-per-page:-1
     :hide-default-footer="true"
+    @dblclick:row="onDblClick"
+
   />
 </template>
 

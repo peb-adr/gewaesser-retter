@@ -9,7 +9,7 @@
     </div>
     <div class="contextmenu"
       v-if="contextmenu"
-      ref="context"
+      :style="{ top:contexttop + 'px', left:contextleft + 'px'}"
     >
       <Contextmenu v-bind:latlng="contextlatlng" />
     </div>
@@ -42,7 +42,9 @@ export default {
     map: null,
     layergroup: L.featureGroup(),
     contextmenu: false,
-    contextcoords: []
+    contextcoords: [],
+    contextleft: 0,
+    contexttop: 0
   }),
   watch: {
     trashData() {
@@ -65,6 +67,8 @@ export default {
         this.contextmenu = false;
         this.contextmenu = true;
         this.contextlatlng = evt.latlng;
+        this.contextleft = evt.containerPoint.x;
+        this.contexttop = evt.containerPoint.y;
       },
       click: () => {
         this.contextmenu = false;
@@ -156,6 +160,17 @@ export default {
   z-index: 999;
   width: 300x;
   max-width: 300px;
+}
+
+.contextmenu {
+  position: absolute;
+  background: rgb(255, 255, 255);
+  color: black;
+  z-index: 999;
+  width: 300x;
+  max-width: 300px;
+  top: 0px;
+  left:0px;
 }
 
 </style>
