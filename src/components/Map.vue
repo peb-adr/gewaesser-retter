@@ -11,7 +11,11 @@
       v-if="contextmenu"
       :style="{ top:contexttop + 'px', left:contextleft + 'px'}"
     >
-      <Contextmenu v-bind:latlng="contextlatlng" />
+      <Contextmenu
+      v-bind:latlng="contextlatlng"
+      v-on:update:zoom="positionPing"
+      v-on:update:togglecontext="contextmenu=false"
+      />
     </div>
   </div>
 </template>
@@ -80,8 +84,12 @@ export default {
     this.$root.$on('requestzoom', coords => this.zoomTo(coords));
   },
   methods: {
+
+    /**
+    * @params coords: [lon, lat] geojson-style coordinates
+    */
     zoomTo(coords){
-      this.map.setView([coords[1], coords[0]], 14);
+      this.map.setView([coords[1], coords[0]], 15);
     },
     buildData() {
       this.layergroup.clearLayers();
@@ -92,7 +100,7 @@ export default {
         maxClusterRadius: 80,
         iconCreateFunction: function () {
           return L.icon({
-              iconUrl: "trash-blue-group.png",
+              iconUrl: "user-plus-solid.png",
               iconSize: [24, 28],
               iconAnchor: [12, 14]
           });
@@ -102,15 +110,15 @@ export default {
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
-          iconUrl: 'trash-blue.png'
+          iconUrl: 'trash-can-solid.png'
         },
         {
           featureFilter: f => f.properties.type === 'action' && f.properties.done,
-          iconUrl: 'trash-green.png'
+          iconUrl: 'users-solid.png'
         },
         {
           featureFilter: f => f.properties.type === 'action' && !f.properties.done,
-          iconUrl: 'trash-red.png'
+          iconUrl: 'users-solid.png'
         }
       ]
       for (const category of categories ) {
@@ -141,6 +149,19 @@ export default {
         });
         clusterGroup.addLayer(layer);
       }
+    },
+
+    positionPing(latlng){
+      this.zoomTo([latlng.lng, latlng.lat]);
+      const layer = new L.marker(latlng, {
+        icon: L.icon({
+          iconUrl: 'map-pin-solid.png',
+          iconSize: [24, 28],
+          iconAnchor: [12, 28]
+        })
+      });
+      layer.addTo(this.map);
+      setTimeout(()=> this.map.removeLayer(layer), 1500);
     }
   }
 };
@@ -167,8 +188,6 @@ export default {
   background: rgb(255, 255, 255);
   color: black;
   z-index: 999;
-  width: 300x;
-  max-width: 300px;
   top: 0px;
   left:0px;
 }
