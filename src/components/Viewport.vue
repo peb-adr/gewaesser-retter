@@ -2,6 +2,7 @@
   <div>
     <v-tabs
       v-model="tab">
+      <!-- tabs definition -->
       <v-tab>
         Karte
       </v-tab>
@@ -9,12 +10,15 @@
         Details
       </v-tab>
       <v-tabs-items v-model="tab">
+      <!-- tabs details -->
         <v-tab-item>
           <Map
             v-bind:trashData="trashData"
             v-bind:infoItem="infoItem"
             v-on:update:mapitem="updateItem"
           />
+          <!-- binding data makes children get the updates -->
+          <!-- v-on listeners enables children to send events -->
         </v-tab-item>
         <v-tab-item>
           <Table

@@ -14,6 +14,12 @@
 </template>
 
 <script>
+// This is the "popup" for a leaflet map item clicked on Map.vue. It has the
+// infoItem as a property, and should offer short information. The url property
+// might contain external data on a different server (privacy reasons) and is
+// currently included in an iframe (TODO: check if that works on mobile + all
+// browsers)
+
 export default {
   props: {
     infoItem: Object
@@ -25,6 +31,10 @@ export default {
       }
     }
   },
+
+  /**
+   * emits a "I want to zoom to my position" event to the parent map
+  */
   methods: {
     zoomTo() {
       this.$emit('update:zoom', this.infoItem.geometry.coordinates);

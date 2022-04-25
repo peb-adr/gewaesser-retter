@@ -7,13 +7,17 @@
     items-per-page:-1
     :hide-default-footer="true"
     @dblclick:row="onDblClick"
-
   />
 </template>
 
 <script>
+// TODO The table view, getting it's data from the viewport. Should offer some
+// sorting and filtering
+
 export default {
   props: {
+    // trashData is the raw geojson that the Map gets too (to be in sync), for
+    // display, further conversion needs to be done to get an array of items.
     trashData: Object
   },
   data: () => ({
@@ -42,6 +46,8 @@ export default {
     currentData: []
   }),
   watch: {
+    // watcher that triggers as soon as trashData gets an update. TODO: Re-check
+    // once the backend is implemented
     trashData() {
       this.currentData =
         this.trashData.features.map(f => f.properties);
@@ -67,4 +73,3 @@ export default {
 }
 
 </script>
-
