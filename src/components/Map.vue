@@ -135,9 +135,9 @@ export default {
       // TODO add the number of clustered icons
       var clusterGroup = L.markerClusterGroup({
         animate: true,
-        maxClusterRadius: 80,
+        maxClusterRadius: 50,
         removeOutsideVisibleBounds: true,
-        polygonOptions: { opacity: 0 },
+        showCoverageOnHover: false,
         iconCreateFunction: function () {
           return L.icon({
               iconUrl: "user-plus-solid.png",
@@ -190,7 +190,7 @@ export default {
             // adding trigger for "click on item": select this item
             layer.on("click", function(e) {
               me.$emit('update:mapitem',e.sourceTarget.feature);
-            })
+            });
           }
         });
         // add the layer to the cluster
@@ -226,10 +226,12 @@ export default {
         this.map.setView(evt.latlng, 14);
         // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
       })
-      this.map.once('locationError', (err) =>
+      this.map.once('locationError', (err) => console.log(err)
       // see https://leafletjs.com/reference-1.7.1.html#map-locationerror
       //TODO: some feedback
-      console.log(err)
+      // err.code 1 PERMISSION_DENIED
+      // 2 POSITION_UNAVAILABLE
+      // 3 TIMEOUT
       )
     },
   }
