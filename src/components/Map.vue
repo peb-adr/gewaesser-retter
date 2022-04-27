@@ -224,6 +224,7 @@ export default {
       this.map.locate({timeout: 15000});
       this.map.once('locationfound', (evt) => {
         this.map.setView(evt.latlng, 14);
+        this.contextlatlng = evt.latlng;
         // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
       })
       this.map.once('locationError', (err) => console.log(err)
