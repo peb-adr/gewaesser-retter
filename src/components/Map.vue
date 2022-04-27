@@ -130,37 +130,23 @@ export default {
       const me = this;
       if (!this.trashData.length) { return; }
 
-      // clustergroups 'join' features close to each other, to avoid
-      // cluttering. More advanced icons are possible,
-      // TODO add the number of clustered icons
-      var clusterGroup = L.markerClusterGroup({
-        animate: true,
-        maxClusterRadius: 50,
-        removeOutsideVisibleBounds: true,
-        showCoverageOnHover: false,
-        iconCreateFunction: function () {
-          return L.icon({
-              iconUrl: "user-plus-solid.png",
-              iconSize: [24, 28],
-              iconAnchor: [12, 14]
-          });
-        }
-      });
-      this.layergroup.addLayer(clusterGroup);
 
       // defining how to sort/filter the categories for different symbols
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
-          iconUrl: 'trash-can-solid.png'
+          iconUrl: 'trash-can-solid.png',
+          clusterIcon: 'trash-blue-group.png'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && f.properties.done,
-          iconUrl: 'users-solid.png'
+          iconUrl: 'users-solid.png',
+          clusterIcon: 'user-plus-solid.png'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && !f.properties.done,
-          iconUrl: 'users-solid.png'
+          iconUrl: 'users-solid.png',
+          clusterIcon: 'trash-red.png'
         }
       ]
       for (const category of categories ) {
@@ -169,6 +155,20 @@ export default {
           "type": "FeatureCollection",
           "features": this.trashData.filter(category.featureFilter)
         };
+
+        const cluster = L.markerClusterGroup({
+          animate: true,
+          maxClusterRadius: 40,
+          removeOutsideVisibleBounds: true,
+          showCoverageOnHover: false,
+          iconCreateFunction: function () {
+            return L.icon({
+                iconUrl: category.clusterIcon,
+                iconSize: [24, 28],
+                iconAnchor: [12, 14]
+            });
+          }
+        });
         // creating a leaflet layer
         const layer = L.geoJSON(json, {
           pointToLayer: function(feature, latlng) {
@@ -194,7 +194,8 @@ export default {
           }
         });
         // add the layer to the cluster
-        clusterGroup.addLayer(layer);
+        cluster.addLayer(layer);
+        this.layergroup.addLayer(cluster);
       }
     },
 
