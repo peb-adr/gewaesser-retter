@@ -18,7 +18,7 @@ export default {
   props: {
     // trashData is the raw geojson that the Map gets too (to be in sync), for
     // display, further conversion needs to be done to get an array of items.
-    trashData: Object
+    trashData: Array
   },
   data: () => ({
     tableHeader: [{

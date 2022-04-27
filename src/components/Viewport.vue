@@ -45,7 +45,7 @@ export default {
     Map: Map
   },
   data: () => ({
-    trashData: {},
+    trashData: [],
     infoItem: null,
     tab: 0,
     firebaseConfig: {

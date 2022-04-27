@@ -38,7 +38,7 @@ export default {
   // geojson data and the full properteis of every item, the infoItem is the
   // currently selected one.
   props: {
-    trashData: Object,
+    trashData: Array,
     infoItem: Object
   },
   data: () => ({
