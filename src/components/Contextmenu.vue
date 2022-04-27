@@ -37,21 +37,12 @@ export default {
     },
 
     /**
-     * TODO: offer a button to get current position (and adding a collection
-     there?). Depending on device, this will trigger an "allow website to get
-     position?" dialog
+     * offers to get current position. Depending on device, this will trigger
+     * an "allow website to get position?" dialog (may not work or be well
+     * hidden on some browsers)
      */
     geolocateMe(){
-      this.map.locate({timeout: 15000});
-      this.map.once('locationfound', (evt) => {
-        this.map.setView(evt.latlng, 14);
-        // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
-      })
-      this.map.once('locationError', (err) =>
-      // see https://leafletjs.com/reference-1.7.1.html#map-locationerror
-      //TODO: some feedback
-      console.log(err)
-      )
+      this.$emit('geolocate');
     },
 
     /**

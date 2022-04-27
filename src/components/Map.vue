@@ -14,6 +14,7 @@
       <Contextmenu
       v-bind:latlng="contextlatlng"
       v-on:update:zoom="positionPing"
+      v-on:geolocate="geolocateMe"
       v-on:update:togglecontext="contextmenu=false"
       />
     </div>
@@ -210,8 +211,29 @@ export default {
       });
       layer.addTo(this.map);
       setTimeout(()=> this.map.removeLayer(layer), 1500);
-    }
+    },
+    // TODO setFilter sets or unsets a filter
+    // modifyPoint: adds or removes a single entry - to be used if the backend
+      // only changes one item
+
+    /**
+    * Tries to get the current gps- Position. Depends on geo availability and
+    * on local browser permissions. On success, zooms to the current position
+     */
+    geolocateMe(){
+      this.map.locate({timeout: 15000});
+      this.map.once('locationfound', (evt) => {
+        this.map.setView(evt.latlng, 14);
+        // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
+      })
+      this.map.once('locationError', (err) =>
+      // see https://leafletjs.com/reference-1.7.1.html#map-locationerror
+      //TODO: some feedback
+      console.log(err)
+      )
+    },
   }
+
 };
 
 
