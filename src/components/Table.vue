@@ -4,20 +4,21 @@
     item-key="name"
     :items="currentData"
     :single-select="true"
-    items-per-page:-1
+    :items-per-page=-1
     :hide-default-footer="true"
     @dblclick:row="onDblClick"
+    @contextmenu:row="onContext"
+    no-data-text="Keine Daten gefunden"
   />
+  <!-- active-class="active-tab" expanded-item for small devices -->
 </template>
 
 <script>
-// TODO The table view, getting it's data from the viewport. Should offer some
-// sorting and filtering
+// The table view, getting it's data from the viewport. Should offer
+// filtering
 
 export default {
   props: {
-    // trashData is the raw geojson that the Map gets too (to be in sync), for
-    // display, further conversion needs to be done to get an array of items.
     trashData: Array
   },
   data: () => ({
@@ -32,7 +33,9 @@ export default {
     }, {
       text: "Eintrag",
       align: "left",
-      value: "date"
+      value: "date",
+      sortable: true,
+      sort: (a, b) => a - b
     }, {
       text: "Datum",
       align: "left",
@@ -49,25 +52,30 @@ export default {
     // watcher that triggers as soon as trashData gets an update. TODO: Re-check
     // once the backend is implemented
     trashData() {
-      this.currentData =
-        this.trashData.map(f => f.properties);
-      }
+      this.sortData();
+    }
   },
   mounted() {
     if (!this.trashData || !this.trashData.length) {
       this.currentData = [];
     } else {
-      this.currentData = this.trashData.map(
-        f => f.properties);
+      this.sortData();
     }
   },
   methods: {
+    sortData() {
+      this.currentData = this.trashData.map(f => f.properties).sort(
+          (a,b) => a.date > b.date);
+    },
     onDblClick(ev, ev2){
       const item = this.trashData.find(t => t.properties === ev2.item);
       if (item) {
         this.$root.$emit('requestzoom', item.geometry.coordinates);
         this.$emit('update:mapitem', item);
       }
+    },
+    onContext(evt, row) {
+      console.log(row.item);
     }
   }
 }
