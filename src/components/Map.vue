@@ -127,7 +127,7 @@ export default {
       // remove all
       this.layergroup.clearLayers();
       const me = this;
-      if (!this.trashData.features) { return; }
+      if (!this.trashData.length) { return; }
 
       // clustergroups 'join' features close to each other, to avoid
       // cluttering. More advanced icons are possible,
@@ -166,7 +166,7 @@ export default {
         // creating a pseudo geojson for each category
         const json = {
           "type": "FeatureCollection",
-          "features": this.trashData.features.filter(category.featureFilter)
+          "features": this.trashData.filter(category.featureFilter)
         };
         // creating a leaflet layer
         const layer = L.geoJSON(json, {
@@ -213,6 +213,7 @@ export default {
     }
   }
 };
+
 
 </script>
 <style>

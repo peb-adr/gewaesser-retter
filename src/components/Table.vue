@@ -50,20 +50,20 @@ export default {
     // once the backend is implemented
     trashData() {
       this.currentData =
-        this.trashData.features.map(f => f.properties);
+        this.trashData.map(f => f.properties);
       }
   },
   mounted() {
-    if (!this.trashData || !this.trashData.features) {
+    if (!this.trashData || !this.trashData.length) {
       this.currentData = [];
     } else {
-      this.currentData = this.trashData.features.map(
+      this.currentData = this.trashData.map(
         f => f.properties);
     }
   },
   methods: {
     onDblClick(ev, ev2){
-      const item = this.trashData.features.find(t => t.properties === ev2.item);
+      const item = this.trashData.find(t => t.properties === ev2.item);
       if (item) {
         this.$root.$emit('requestzoom', item.geometry.coordinates);
         this.$emit('update:mapitem', item);
