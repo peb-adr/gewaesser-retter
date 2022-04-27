@@ -98,6 +98,8 @@ export default {
       var clusterGroup = L.markerClusterGroup({
         animate: true,
         maxClusterRadius: 80,
+        removeOutsideVisibleBounds: true,
+        polygonOptions: { opacity: 0 },
         iconCreateFunction: function () {
           return L.icon({
               iconUrl: "user-plus-solid.png",
@@ -113,11 +115,11 @@ export default {
           iconUrl: 'trash-can-solid.png'
         },
         {
-          featureFilter: f => f.properties.type === 'action' && f.properties.done,
+          featureFilter: f => f.properties.type === 'aktion' && f.properties.done,
           iconUrl: 'users-solid.png'
         },
         {
-          featureFilter: f => f.properties.type === 'action' && !f.properties.done,
+          featureFilter: f => f.properties.type === 'aktion' && !f.properties.done,
           iconUrl: 'users-solid.png'
         }
       ]
