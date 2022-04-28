@@ -14,6 +14,7 @@
       <Contextmenu
       v-bind:latlng="contextlatlng"
       v-on:update:zoom="positionPing"
+      v-on:geolocate="geolocateMe"
       v-on:update:togglecontext="contextmenu=false"
       />
     </div>
@@ -33,29 +34,48 @@ export default {
     Infomenu: Infomenu,
     Contextmenu: Contextmenu
   },
+
+  // incoming properties (sent by the parent Viewport). trashData contains the
+  // geojson data and the full properteis of every item, the infoItem is the
+  // currently selected one.
   props: {
-    trashData: Object,
+    trashData: Array,
     infoItem: Object
   },
   data: () => ({
+    // describes the background openstreetmap layer
     osm: new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 16,
       attribution:
         'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }),
+    // the map itself. Should only be initiated once this vue item is existing
+    // in the DOM, (i.e. mounted)
     map: null,
+
+    // a group of layers to be added to the map. Top level for everything not
+    // being background map
     layergroup: L.featureGroup(),
-    contextmenu: false,
-    contextcoords: [],
+
+    contextmenu: false, // toggle for the menu
+
+     // (css) placement for the contextmenu on the canvas
     contextleft: 0,
     contexttop: 0
   }),
   watch: {
+    //trigger the data (re)-construction if parent updates data. TODO check
+    //with backend finished (might be overkill if just one item changes)
     trashData() {
       this.buildData();
     }
   },
+
+  /**
+   * init fucntion once the element exists in the DOM
+   */
   mounted() {
+    // create the map in the div with the id "mapId"
     this.map = L.map("mapId", {
       attributionControl: true,
       center: [48.5, 10.5],
@@ -65,8 +85,11 @@ export default {
       fadeAnimation: false,
       zoomControl: false,
     });
+    // add background and feature layer
     this.osm.addTo(this.map);
     this.map.on({
+      // trigger: right click/longpress. Overwrites default event listeners.
+      // Opens the child element Contextmenu and sets it's position
       contextmenu: (evt) => {
         this.contextmenu = false;
         this.contextmenu = true;
@@ -74,6 +97,8 @@ export default {
         this.contextleft = evt.containerPoint.x;
         this.contexttop = evt.containerPoint.y;
       },
+      // general click "somewhere". Closes the contextmenu or any selected
+      // item
       click: () => {
         this.contextmenu = false;
         this.$emit('update:mapitem', null);
@@ -81,53 +106,70 @@ export default {
     });
     this.layergroup.addTo(this.map);
     this.buildData();
+    // listen to the root trigger "requestzoom", which listens to the Table
+    // component. Do a zoom!
     this.$root.$on('requestzoom', coords => this.zoomTo(coords));
   },
-  methods: {
 
+  methods: {
     /**
+    * Zoom to a position
     * @params coords: [lon, lat] geojson-style coordinates
     */
     zoomTo(coords){
-      this.map.setView([coords[1], coords[0]], 15);
+      this.map.setView([coords[1], coords[0]], 15); // (latlng, zoomlevel)
     },
+    /**
+     * Parses the trashData geojson, gets the categories (trash, Aktion) and
+     * puts them into layers
+     */
     buildData() {
+
+      // remove all
       this.layergroup.clearLayers();
       const me = this;
-      if (!this.trashData.features) { return; }
-      var clusterGroup = L.markerClusterGroup({
-        animate: true,
-        maxClusterRadius: 80,
-        removeOutsideVisibleBounds: true,
-        polygonOptions: { opacity: 0 },
-        iconCreateFunction: function () {
-          return L.icon({
-              iconUrl: "user-plus-solid.png",
-              iconSize: [24, 28],
-              iconAnchor: [12, 14]
-          });
-        }
-      });
-      this.layergroup.addLayer(clusterGroup);
+      if (!this.trashData.length) { return; }
+
+
+      // defining how to sort/filter the categories for different symbols
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
-          iconUrl: 'trash-can-solid.png'
+          iconUrl: 'trash-can-solid.png',
+          clusterIcon: 'trash-blue-group.png'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && f.properties.done,
-          iconUrl: 'users-solid.png'
+          iconUrl: 'users-solid.png',
+          clusterIcon: 'user-plus-solid.png'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && !f.properties.done,
-          iconUrl: 'users-solid.png'
+          iconUrl: 'users-solid.png',
+          clusterIcon: 'trash-red.png'
         }
       ]
       for (const category of categories ) {
+        // creating a pseudo geojson for each category
         const json = {
           "type": "FeatureCollection",
-          "features": this.trashData.features.filter(category.featureFilter)
+          "features": this.trashData.filter(category.featureFilter)
         };
+
+        const cluster = L.markerClusterGroup({
+          animate: true,
+          maxClusterRadius: 40,
+          removeOutsideVisibleBounds: true,
+          showCoverageOnHover: false,
+          iconCreateFunction: function () {
+            return L.icon({
+                iconUrl: category.clusterIcon,
+                iconSize: [24, 28],
+                iconAnchor: [12, 14]
+            });
+          }
+        });
+        // creating a leaflet layer
         const layer = L.geoJSON(json, {
           pointToLayer: function(feature, latlng) {
             return L.marker(latlng, {
@@ -139,20 +181,26 @@ export default {
             });
           },
           onEachFeature: function(feature, layer) {
+            // adding trigger for "hover over item": display basic name
             layer.bindTooltip(
               String("<b>" + feature.properties["name"] + "</b>"), {
                 direction: "right",
                 offset: [32, 18]
               });
+            // adding trigger for "click on item": select this item
             layer.on("click", function(e) {
               me.$emit('update:mapitem',e.sourceTarget.feature);
-            })
+            });
           }
         });
-        clusterGroup.addLayer(layer);
+        // add the layer to the cluster
+        cluster.addLayer(layer);
+        this.layergroup.addLayer(cluster);
       }
     },
 
+    // helper: Sets a zoom, shortly a marker, to give a feedback on where the
+    // requesting event happened
     positionPing(latlng){
       this.zoomTo([latlng.lng, latlng.lat]);
       const layer = new L.marker(latlng, {
@@ -164,9 +212,34 @@ export default {
       });
       layer.addTo(this.map);
       setTimeout(()=> this.map.removeLayer(layer), 1500);
-    }
+    },
+    // TODO setFilter sets or unsets a filter
+    // modifyPoint: adds or removes a single entry - to be used if the backend
+      // only changes one item
+
+    /**
+    * Tries to get the current gps- Position. Depends on geo availability and
+    * on local browser permissions. On success, zooms to the current position
+     */
+    geolocateMe(){
+      this.map.locate({timeout: 15000});
+      this.map.once('locationfound', (evt) => {
+        this.map.setView(evt.latlng, 14);
+        this.contextlatlng = evt.latlng;
+        // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
+      })
+      this.map.once('locationError', (err) => console.log(err)
+      // see https://leafletjs.com/reference-1.7.1.html#map-locationerror
+      //TODO: some feedback
+      // err.code 1 PERMISSION_DENIED
+      // 2 POSITION_UNAVAILABLE
+      // 3 TIMEOUT
+      )
+    },
   }
+
 };
+
 
 </script>
 <style>
