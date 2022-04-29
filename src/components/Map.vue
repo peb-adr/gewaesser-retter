@@ -134,18 +134,15 @@ export default {
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
-          iconUrl: 'recycle-grey.png',
-          clusterClass: 'trash'
+          iconClass: 'trash'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && f.properties.done,
-          iconUrl: 'users-solid-grey-done.png',
-          clusterClass: 'aktion-done'
+          iconClass: 'aktion-done'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && !f.properties.done,
-          iconUrl: 'users-solid-grey.png',
-          clusterClass: 'aktion'
+          iconClass: 'aktion'
         }
       ]
       for (const category of categories ) {
@@ -163,7 +160,7 @@ export default {
           iconCreateFunction: function (cluster) {
             return L.divIcon({
               html: '<div class="divIconCluster ' +
-                  category.clusterClass +
+                  category.iconClass +
                 '"></div><div class="myMarkerCluster">' +
                   cluster.getChildCount() +
                   "</div>",
@@ -176,10 +173,14 @@ export default {
         const layer = L.geoJSON(json, {
           pointToLayer: function(feature, latlng) {
             return L.marker(latlng, {
-              icon: L.icon({
-                iconUrl: category.iconUrl,
+              icon: L.divIcon({
+                html: '<div class="divIconCluster ' +
+                  category.iconClass +
+                  '"</div><div class="myMarkerString">'
+                  + feature.properties.name +
+                  '</div>',
                 iconSize: [40, 40],
-                iconAnchor: [20, 20]
+                className: ""
               })
             });
           },
@@ -301,4 +302,17 @@ export default {
   font-weight: bold;
   text-align: center;
 }
+
+.myMarkerString {
+  position: absolute;
+  top: 85%;
+  width: 100%;
+  height: 2.3em;
+  line-height: normal;
+  overflow: hidden;
+  color:#777777;
+  font-weight: bold;
+  font-style: italic;
+}
+
 </style>
