@@ -177,7 +177,7 @@ export default {
                 html: '<div class="divIconCluster ' +
                   category.iconClass +
                   '"</div><div class="myMarkerString">'
-                  + feature.properties.name +
+                  + feature.properties.name.replace(/</g, "&#60;") +
                   '</div>',
                 iconSize: [40, 40],
                 className: ""
@@ -187,7 +187,11 @@ export default {
           onEachFeature: function(feature, layer) {
             // adding trigger for "hover over item": display basic name
             layer.bindTooltip(
-              String("<b>" + feature.properties["name"] + "</b>"), {
+              String(
+                "<b>" +
+                feature.properties["name"].replace(/</g, "&#60;") +
+                "</b>"
+              ), {
                 direction: "right",
                 offset: [10, 10]
               });
