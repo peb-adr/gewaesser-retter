@@ -81,7 +81,7 @@ export default {
       center: [48.5, 10.5],
       zoom: 5,
       maxZoom: 16,
-      minZoom: 4,
+      minZoom: 5,
       fadeAnimation: false,
       zoomControl: false,
     });
@@ -117,7 +117,7 @@ export default {
     * @params coords: [lon, lat] geojson-style coordinates
     */
     zoomTo(coords){
-      this.map.setView([coords[1], coords[0]], 15); // (latlng, zoomlevel)
+      this.map.setView([coords[1], coords[0]], 16); // (latlng, zoomlevel)
     },
     /**
      * Parses the trashData geojson, gets the categories (trash, Aktion) and
@@ -215,7 +215,7 @@ export default {
         icon: L.icon({
           iconUrl: 'map-pin-solid.png',
           iconSize: [30, 40],
-          iconAnchor: [15, 20]
+          iconAnchor: [15, 40]
         })
       });
       layer.addTo(this.map);
@@ -232,7 +232,7 @@ export default {
     geolocateMe(){
       this.map.locate({timeout: 15000});
       this.map.once('locationfound', (evt) => {
-        this.map.setView(evt.latlng, 14);
+        this.positionPing(evt.latlng);
         this.contextlatlng = evt.latlng;
         // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
       })
