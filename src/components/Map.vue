@@ -130,23 +130,22 @@ export default {
       const me = this;
       if (!this.trashData.length) { return; }
 
-
       // defining how to sort/filter the categories for different symbols
       const categories = [
         {
           featureFilter: f => f.properties.type === 'trash',
-          iconUrl: 'trash-can-solid.png',
-          clusterIcon: 'trash-blue-group.png'
+          iconUrl: 'recycle-grey.png',
+          clusterClass: 'trash'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && f.properties.done,
-          iconUrl: 'users-solid.png',
-          clusterIcon: 'user-plus-solid.png'
+          iconUrl: 'users-solid-grey-done.png',
+          clusterClass: 'aktion-done'
         },
         {
           featureFilter: f => f.properties.type === 'aktion' && !f.properties.done,
-          iconUrl: 'users-solid.png',
-          clusterIcon: 'trash-red.png'
+          iconUrl: 'users-solid-grey.png',
+          clusterClass: 'aktion'
         }
       ]
       for (const category of categories ) {
@@ -158,15 +157,19 @@ export default {
 
         const cluster = L.markerClusterGroup({
           animate: true,
-          maxClusterRadius: 40,
+          maxClusterRadius: 80,
           removeOutsideVisibleBounds: true,
           showCoverageOnHover: false,
-          iconCreateFunction: function () {
-            return L.icon({
-                iconUrl: category.clusterIcon,
-                iconSize: [24, 28],
-                iconAnchor: [12, 14]
-            });
+          iconCreateFunction: function (cluster) {
+            return L.divIcon({
+              html: '<div class="divIconCluster ' +
+                  category.clusterClass +
+                '"></div><div class="myMarkerCluster">' +
+                  cluster.getChildCount() +
+                  "</div>",
+                iconSize: [40, 40],
+                className: ""
+              });
           }
         });
         // creating a leaflet layer
@@ -175,8 +178,8 @@ export default {
             return L.marker(latlng, {
               icon: L.icon({
                 iconUrl: category.iconUrl,
-                iconSize: [24, 28],
-                iconAnchor: [12, 14]
+                iconSize: [40, 40],
+                iconAnchor: [20, 20]
               })
             });
           },
@@ -185,7 +188,7 @@ export default {
             layer.bindTooltip(
               String("<b>" + feature.properties["name"] + "</b>"), {
                 direction: "right",
-                offset: [32, 18]
+                offset: [10, 10]
               });
             // adding trigger for "click on item": select this item
             layer.on("click", function(e) {
@@ -206,8 +209,8 @@ export default {
       const layer = new L.marker(latlng, {
         icon: L.icon({
           iconUrl: 'map-pin-solid.png',
-          iconSize: [24, 28],
-          iconAnchor: [12, 28]
+          iconSize: [30, 40],
+          iconAnchor: [15, 20]
         })
       });
       layer.addTo(this.map);
@@ -240,7 +243,6 @@ export default {
 
 };
 
-
 </script>
 <style>
 .map {
@@ -267,4 +269,36 @@ export default {
   left:0px;
 }
 
+.divIconCluster {
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  background-size: 40px;
+}
+
+.aktion {
+  background-image: url("../../public/users-solid-grey.png");
+}
+
+.aktion-done {
+  background-image: url("../../public/users-solid-grey-done.png");
+}
+
+.trash {
+  background-image: url("../../public/recycle-grey.png");
+}
+
+.myMarkerCluster {
+  border-radius: 50%;
+  width: 1.5em;
+  height: 1.5em;
+  background-color: darkslategrey;
+  color: white;
+  position: absolute;
+  top: 60%;
+  left: 60%;
+  font-weight: bold;
+  text-align: center;
+}
 </style>
