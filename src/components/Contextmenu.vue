@@ -43,6 +43,7 @@ export default {
      */
     geolocateMe(){
       this.$emit('geolocate');
+      this.$emit('update:togglecontext');
     },
 
     /**
