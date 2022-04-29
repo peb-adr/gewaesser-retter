@@ -25,6 +25,8 @@
 import * as L from "leaflet";
 import "../../node_modules/leaflet.markercluster/dist/leaflet.markercluster.js";
 import "../../node_modules/leaflet.markercluster/dist/MarkerCluster.css";
+import "../../node_modules/leaflet.defaultextent/dist/leaflet.defaultextent.css";
+import "../../node_modules/leaflet.defaultextent/dist/leaflet.defaultextent.js";
 import "../../node_modules/leaflet/dist/leaflet.css";
 import Infomenu from "./Infomenu";
 import Contextmenu from "./Contextmenu";
@@ -78,12 +80,13 @@ export default {
     // create the map in the div with the id "mapId"
     this.map = L.map("mapId", {
       attributionControl: true,
-      center: [48.5, 10.5],
+      center: [51, 10],
       zoom: 5,
       maxZoom: 16,
       minZoom: 5,
       fadeAnimation: false,
       zoomControl: false,
+      defaultExtentControl: true
     });
     // add background and feature layer
     this.osm.addTo(this.map);
