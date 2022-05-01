@@ -133,6 +133,30 @@ export default {
       const me = this;
       if (!this.trashData.length) { return; }
 
+      // creating the cluster
+      const cluster = L.markerClusterGroup({
+        animate: true,
+        maxClusterRadius: 80,
+        removeOutsideVisibleBounds: true,
+        showCoverageOnHover: false,
+        iconCreateFunction: function (cluster) {
+          const childs = cluster.getAllChildMarkers();
+          const iconClass = childs.find(f => f.feature.properties.type === 'aktion') ?
+              childs.find(f=> f.feature.properties.type === 'trash' ) ?
+                "aktionandtrash" :
+                "aktion":
+                "trash";
+          return L.divIcon({
+            html: '<div class="divIconCluster ' +
+                iconClass +
+              '"></div><div class="myMarkerCluster">' +
+                cluster.getChildCount() +
+                "</div>",
+              iconSize: [40, 40],
+              className: ""
+            });
+        }
+      });
       // defining how to sort/filter the categories for different symbols
       const categories = [
         {
@@ -155,23 +179,6 @@ export default {
           "features": this.trashData.filter(category.featureFilter)
         };
 
-        const cluster = L.markerClusterGroup({
-          animate: true,
-          maxClusterRadius: 80,
-          removeOutsideVisibleBounds: true,
-          showCoverageOnHover: false,
-          iconCreateFunction: function (cluster) {
-            return L.divIcon({
-              html: '<div class="divIconCluster ' +
-                  category.iconClass +
-                '"></div><div class="myMarkerCluster">' +
-                  cluster.getChildCount() +
-                  "</div>",
-                iconSize: [40, 40],
-                className: ""
-              });
-          }
-        });
         // creating a leaflet layer
         const layer = L.geoJSON(json, {
           pointToLayer: function(feature, latlng) {
@@ -206,8 +213,8 @@ export default {
         });
         // add the layer to the cluster
         cluster.addLayer(layer);
-        this.layergroup.addLayer(cluster);
       }
+      this.layergroup.addLayer(cluster);
     },
 
     // helper: Sets a zoom, shortly a marker, to give a feedback on where the
@@ -295,6 +302,10 @@ export default {
 
 .trash {
   background-image: url("../../public/recycle-grey.png");
+}
+
+.aktionandtrash {
+  background-image: url("../../public/users-recycling.png");
 }
 
 .myMarkerCluster {
