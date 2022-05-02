@@ -1,5 +1,5 @@
 <template>
-  <div v-if="item">
+  <v-card v-if="item" elevation="2">
     {{ item.name }} <br/> <v-btn @click="zoomTo()">zoom </v-btn>
     {{ item.type }} <br/>
     {{ item.date }} <br/>
@@ -9,8 +9,7 @@
       class="info-iframe"
       frameBorder="0"
     />
-  </div>
-
+  </v-card>
 </template>
 
 <script>

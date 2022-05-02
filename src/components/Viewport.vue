@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <v-app>
     <v-tabs
       v-model="tab">
       <!-- tabs definition -->
@@ -29,7 +29,7 @@
       </v-tabs-items>
     </v-tabs>
     <div class="footer" />
-  </div>
+  </v-app>
 </template>
 
 <script>

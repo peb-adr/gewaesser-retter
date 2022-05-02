@@ -1,14 +1,21 @@
 <template>
-  <v-card>
-    <v-btn @click="newTrash()">Hier eintragen: Müllsammlung</v-btn>
-    <br/>
-    <v-btn @click="newAktion()">Hier eintragen: geplante Aktion</v-btn>
-    <br/>
-    <v-btn @click="geolocateMe()">gehe zu meiner Position</v-btn>
-    <br/>
+<v-card elevation="5">
+  <v-list>
+    <v-list-item
+      @click="newTrash()">
+      Hier eintragen: Müllsammlung
+    </v-list-item>
+    <v-list-item
+      @click="newAktion()">
+      Hier eintragen: geplante Aktion
+    </v-list-item>
+    <v-list-item
+      @click="geolocateMe()">
+        Gehe zu meiner Position
+    </v-list-item>
+  </v-list>
   </v-card>
 </template>
-
 <script>
 // This is the contextmenu, a child of Map.vue, triggered by a right click
 // (or longpress on mobile) leaflet map event. Offers a menu for actions not
