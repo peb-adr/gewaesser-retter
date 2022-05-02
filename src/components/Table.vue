@@ -1,15 +1,26 @@
 <template>
+  <div>
+      <v-select
+      v-model="filter"
+      :items="filters"
+      label="Filter"
+      return-object
+      solo
+      @change="sortData()"
+    />
   <v-data-table
     :headers="tableHeader"
-    item-key="name"
+    item-key="publicId"
     :items="currentData"
     :single-select="true"
     :items-per-page=-1
     :hide-default-footer="true"
+    :options="tableOptions"
     @dblclick:row="onDblClick"
     @contextmenu:row="onContext"
     no-data-text="Keine Daten gefunden"
   />
+  </div>
   <!-- active-class="active-tab" expanded-item for small devices -->
 </template>
 
@@ -21,36 +32,69 @@ export default {
   props: {
     trashData: Array
   },
+
   data: () => ({
+    tableOptions: {
+        sortBy: ["date", "planned", "name"],
+        sortDesc: [false, false, false],
+        mustSort: true
+    },
     tableHeader: [{
       text: "Name",
       align: "left",
-      value: "name"
+      value: "name",
+      sortable: false
     }, {
       text: "Typ",
       align: "left",
-      value: "type"
+      value: "type",
+      sortable: false
     }, {
       text: "Eintrag",
       align: "left",
       value: "date",
-      sortable: true,
-      sort: (a, b) => a - b
+      sortable: false
     }, {
       text: "Datum",
       align: "left",
-      value: "planned"
+      value: "planned",
+      sortable: false
     }, {
       text: "url",
       align: "left",
-      value: "url"
+      value: "url",
+      sortable: false
     }
     ],
-    currentData: []
+    currentData: [],
+    filter: "Alle",
+    filterOptions: [{
+      label: "Alle",
+      fn: () => true
+    },{
+      label:"Letztes Jahr",
+      fn: (i) => new Date(i.date).getFullYear() === new Date().getFullYear() - 1
+    },{
+      label:"Dieses Jahr",
+      fn: (i) => new Date(i.date).getFullYear() === new Date().getFullYear()
+    }, {
+      label:"Nächste zwei Wochen",
+      fn: (i) => new Date(i.date) < new Date().setDate(new Date() + 14) &&
+        new Date(i.date) > new Date()
+    }, {
+      label:"Zukünftig",
+      fn: (i) => new Date(i.date) > new Date()
+    }]
   }),
+  computed: {
+    filters: {
+      get() {
+        return this.filterOptions.map(o => o.label);
+      }
+    }
+  },
   watch: {
-    // watcher that triggers as soon as trashData gets an update. TODO: Re-check
-    // once the backend is implemented
+    // watcher that triggers as soon as trashData gets an update.
     trashData() {
       this.sortData();
     }
@@ -64,8 +108,9 @@ export default {
   },
   methods: {
     sortData() {
-      this.currentData = this.trashData.map(f => f.properties).sort(
-          (a,b) => a.date > b.date);
+      this.currentData = this.trashData.map(f => f.properties);
+      const filterFn = this.filterOptions.find(f => this.filter === f.label).fn;
+      this.currentData = this.currentData.filter(filterFn);
     },
     onDblClick(ev, ev2){
       const item = this.trashData.find(t => t.properties === ev2.item);
