@@ -1,27 +1,29 @@
 <template>
-  <div>
-      <v-select
-      v-model="filter"
-      :items="filters"
-      label="Filter"
-      return-object
-      solo
-      @change="updateFilter()"
-    />
-  <v-data-table
-    :headers="tableHeader"
-    item-key="publicId"
-    :items="currentData"
-    :single-select="true"
-    :items-per-page=-1
-    :hide-default-footer="true"
-    :options="tableOptions"
-    @dblclick:row="onDblClick"
-    @contextmenu:row="onContext"
-    no-data-text="Keine Daten gefunden"
-  />
-  </div>
-  <!-- active-class="active-tab" expanded-item for small devices -->
+  <v-card>
+    <v-data-table
+      :headers="tableHeader"
+      :items="currentData"
+      item-key="publicId"
+      :options="tableOptions"
+      :hide-default-footer="true"
+      :items-per-page="-1"
+      no-data-text="Keine Daten gefunden"
+      @dblclick:row="onDblClick"
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-select
+            v-model="filter"
+            :items="filters"
+            label="Filter"
+            return-object
+            solo
+            @change="updateFilter()"
+          />
+        </v-toolbar>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>
@@ -98,10 +100,6 @@ export default {
         this.$emit('update:mapitem', item);
       }
     },
-    onContext(evt, row) {
-      console.log(row.item);
-    }
-  }
-}
-
+  },
+};
 </script>
