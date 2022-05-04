@@ -49,7 +49,7 @@ export default {
   data: () => ({
     trashData: [],
     filter: () => true,
-    filtername: "",
+    filterName: "",
     infoItem: null,
     tab: 0,
     firebaseConfig: {

@@ -39,32 +39,24 @@ export default {
         sortDesc: [false, false, false],
         mustSort: true
     },
-    tableHeader: [{
-      text: "Name",
-      align: "left",
-      value: "name",
-      sortable: false
-    }, {
-      text: "Typ",
-      align: "left",
-      value: "type",
-      sortable: false
-    }, {
-      text: "Eintrag",
-      align: "left",
-      value: "date",
-      sortable: false
-    }, {
-      text: "Datum",
-      align: "left",
-      value: "planned",
-      sortable: false
-    }, {
-      text: "url",
-      align: "left",
-      value: "url",
-      sortable: false
-    }
+      {
+        text: "Name",
+        align: "left",
+        value: "name",
+        sortable: true,
+      },
+      {
+        text: "Typ",
+        align: "left",
+        value: "type",
+        sortable: true,
+      },
+      {
+        text: "Eintrag",
+        align: "left",
+        value: "date",
+        sortable: true,
+      },
     ],
     currentData: [],
     filter: "Alle",

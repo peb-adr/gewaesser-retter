@@ -46,7 +46,8 @@ export default {
   // currently selected one.
   props: {
     trashData: Array,
-    infoItem: Object
+    infoItem: Object,
+    filterName: String
   },
   data: () => ({
     // describes the background openstreetmap layer
