@@ -7,6 +7,10 @@
         v-on:update:zoom="zoomTo"
       />
     </div>
+    <span v-if="filterName">
+      Aktiver Filter: {{ filterName }}
+      ({{ trashData.length }} Einträge)
+      </span>
     <div class="contextmenu"
       v-if="contextmenu"
       :style="{ top:contexttop + 'px', left:contextleft + 'px'}"

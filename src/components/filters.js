@@ -27,7 +27,7 @@ const filters = [
     fn: (i) => new Date(i.properties.date).getFullYear() === year - 4,
   },
   {
-    label: "Ältere",
+    label: `Ältere (vor ${(year - 4).toString()})`,
     fn: (i) => new Date(i.properties.date).getFullYear() < year - 4,
   },
   {

@@ -15,6 +15,7 @@
           <Map
             v-bind:trashData="filteredTrashData"
             v-bind:infoItem="infoItem"
+            v-bind:filterName="filterName"
             v-on:update:mapitem="updateItem"
           />
           <!-- binding data makes children get the updates -->
@@ -48,6 +49,7 @@ export default {
   data: () => ({
     trashData: [],
     filter: () => true,
+    filtername: "",
     infoItem: null,
     tab: 0,
     firebaseConfig: {
@@ -86,6 +88,7 @@ export default {
     },
     updateFilter (e) {
       this.filter = e.fn ? e.fn : () => true;
+      this.filterName = e.label || ""
     },
     // TODO Management firebase
     useFireBase() {
