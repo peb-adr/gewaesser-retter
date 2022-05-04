@@ -13,7 +13,7 @@
       <!-- tabs details -->
         <v-tab-item>
           <Map
-            v-bind:trashData="trashData"
+            v-bind:trashData="filteredTrashData"
             v-bind:infoItem="infoItem"
             v-on:update:mapitem="updateItem"
           />
@@ -22,8 +22,9 @@
         </v-tab-item>
         <v-tab-item>
           <Table
-          v-bind:trashData="trashData"
+          v-bind:trashData="filteredTrashData"
           v-on:update:mapitem="updateItem"
+          v-on:update:filter="updateFilter"
         />
         </v-tab-item>
       </v-tabs-items>
@@ -46,6 +47,7 @@ export default {
   },
   data: () => ({
     trashData: [],
+    filter: () => true,
     infoItem: null,
     tab: 0,
     firebaseConfig: {
@@ -61,6 +63,13 @@ export default {
   mounted() {
     this.fetchDummyData();
   },
+  computed: {
+    filteredTrashData: {
+      get() {
+        return this.trashData.filter(this.filter);
+      }
+    }
+  },
   methods: {
     fetchDummyData() {
       fetch("dummydata.json").then((response) => {
@@ -74,6 +83,9 @@ export default {
     updateItem(e){
       this.infoItem = e;
       this.tab = 0;
+    },
+    updateFilter (e) {
+      this.filter = e.fn ? e.fn : () => true;
     },
     // TODO Management firebase
     useFireBase() {

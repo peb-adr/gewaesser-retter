@@ -6,7 +6,7 @@
       label="Filter"
       return-object
       solo
-      @change="sortData()"
+      @change="updateFilter()"
     />
   <v-data-table
     :headers="tableHeader"
@@ -25,8 +25,8 @@
 </template>
 
 <script>
-// The table view, getting it's data from the viewport. Should offer
-// filtering
+// external filter definitions
+import filters from "./filters.js"
 
 export default {
   props: {
@@ -68,23 +68,7 @@ export default {
     ],
     currentData: [],
     filter: "Alle",
-    filterOptions: [{
-      label: "Alle",
-      fn: () => true
-    },{
-      label:"Letztes Jahr",
-      fn: (i) => new Date(i.date).getFullYear() === new Date().getFullYear() - 1
-    },{
-      label:"Dieses Jahr",
-      fn: (i) => new Date(i.date).getFullYear() === new Date().getFullYear()
-    }, {
-      label:"Nächste zwei Wochen",
-      fn: (i) => new Date(i.date) < new Date().setDate(new Date() + 14) &&
-        new Date(i.date) > new Date()
-    }, {
-      label:"Zukünftig",
-      fn: (i) => new Date(i.date) > new Date()
-    }]
+    filterOptions: filters
   }),
   computed: {
     filters: {
@@ -109,9 +93,12 @@ export default {
   methods: {
     sortData() {
       this.currentData = this.trashData.map(f => f.properties);
-      const filterFn = this.filterOptions.find(f => this.filter === f.label).fn;
-      this.currentData = this.currentData.filter(filterFn);
     },
+    updateFilter() {
+      const filter = this.filterOptions.find(f => this.filter === f.label);
+      this.$emit('update:filter', filter);
+    },
+
     onDblClick(ev, ev2){
       const item = this.trashData.find(t => t.properties === ev2.item);
       if (item) {
