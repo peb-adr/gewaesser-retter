@@ -9,6 +9,8 @@
       :items-per-page="-1"
       no-data-text="Keine Daten gefunden"
       @dblclick:row="onDblClick"
+      show-expand
+      :expanded.sync="expanded"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -21,6 +23,15 @@
             @change="updateFilter()"
           />
         </v-toolbar>
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+          <v-card flat>
+            ID: {{ item.publicId }} <br />
+            {{ getDoneText(item) }}
+            <iframe v-if="item.url" :src="item.url" frameBorder="0" />
+          </v-card>
+        </td>
       </template>
     </v-data-table>
   </v-card>
@@ -36,11 +47,13 @@ export default {
   },
 
   data: () => ({
+    expanded: [],
     tableOptions: {
-        sortBy: ["date", "planned", "name"],
-        sortDesc: [false, false, false],
-        mustSort: true
+      sortBy: ["date", "planned", "name"],
+      sortDesc: [false, false, false],
+      mustSort: true
     },
+    tableHeader: [
       {
         text: "Name",
         align: "left",
@@ -58,7 +71,7 @@ export default {
         align: "left",
         value: "date",
         sortable: true,
-      },
+      },{ text: "", value: "data-table-expand" },
     ],
     currentData: [],
     filter: "Alle",
@@ -90,16 +103,26 @@ export default {
     },
     updateFilter() {
       const filter = this.filterOptions.find(f => this.filter === f.label);
-      this.$emit('update:filter', filter);
+      this.$emit("update:filter", filter);
     },
 
-    onDblClick(ev, ev2){
+    onDblClick(ev, ev2) {
       const item = this.trashData.find(t => t.properties === ev2.item);
       if (item) {
-        this.$root.$emit('requestzoom', item.geometry.coordinates);
-        this.$emit('update:mapitem', item);
+        this.$root.$emit("requestzoom", item.geometry.coordinates);
+        this.$emit("update:mapitem", item);
       }
     },
+
+    getDoneText(item) {
+      if (item.type === "aktion") {
+        return item.done ?
+          "Aktion hat bereits stattgefunden" :
+          "Aktion hat noch nicht stattgefunden";
+      } else {
+        return ""
+      }
+    }
   },
 };
 </script>
