@@ -47,7 +47,7 @@ export default {
   },
   data: () => ({
     // describes the background openstreetmap layer
-    osm: new L.TileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    osm: new L.TileLayer("https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png", {
       maxZoom: 16,
       attribution:
         'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
