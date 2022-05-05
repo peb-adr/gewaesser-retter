@@ -24,6 +24,11 @@
           />
         </v-toolbar>
       </template>
+      <template v-slot:item.tableaction="{ item }">
+        <v-icon @click.stop="onDblClick(null, {item})">
+          mdi-magnify
+        </v-icon>
+      </template>
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
           <v-card flat>
@@ -54,6 +59,11 @@ export default {
       mustSort: true
     },
     tableHeader: [
+      {
+        text: "",
+        sortable: false,
+        value:"tableaction",
+      },
       {
         text: "Name",
         align: "left",

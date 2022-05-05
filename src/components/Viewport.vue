@@ -69,7 +69,7 @@ export default {
     error: "",
     trashData: [],
     filter: () => true,
-    filterName: "",
+    filterName: "Alle",
     infoItem: null,
     tab: 0,
     firebaseConfig: {

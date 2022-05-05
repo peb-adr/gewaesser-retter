@@ -7,10 +7,6 @@
         v-on:update:zoom="zoomTo"
       />
     </div>
-    <span v-if="filterName">
-      Aktiver Filter: {{ filterName }}
-      ({{ trashData.length }} Einträge)
-      </span>
     <div class="contextmenu"
       v-if="contextmenu"
       :style="{ top:contexttop + 'px', left:contextleft + 'px'}"
@@ -56,6 +52,9 @@ export default {
       attribution:
         'Map data © <a href="https://openstreetmap.org">OpenStreetMap</a> contributors',
     }),
+
+    maplegend: L.control({position: "bottomleft"}),
+
     // the map itself. Should only be initiated once this vue item is existing
     // in the DOM, (i.e. mounted)
     map: null,
@@ -75,6 +74,9 @@ export default {
     //with backend finished (might be overkill if just one item changes)
     trashData() {
       this.buildData();
+    },
+    filterName() {
+      this.addLegend();
     }
   },
 
@@ -221,6 +223,7 @@ export default {
         cluster.addLayer(layer);
       }
       this.layergroup.addLayer(cluster);
+      this.addLegend();
     },
 
     // helper: Sets a zoom, shortly a marker, to give a feedback on where the
@@ -237,6 +240,7 @@ export default {
       layer.addTo(this.map);
       setTimeout(()=> this.map.removeLayer(layer), 1500);
     },
+
     // TODO setFilter sets or unsets a filter
     // modifyPoint: adds or removes a single entry - to be used if the backend
       // only changes one item
@@ -268,6 +272,23 @@ export default {
         }
       })
     },
+
+    /**
+     * Adds a (pseudo)-legend to the bottom left, currently showing the active
+     * filters and total amount of items
+     */
+    addLegend() {
+      if (this.map) {
+        this.maplegend.remove();
+        this.maplegend.onAdd = () => {
+          const div = L.DomUtil.create('div', 'legend');
+          div.innerHTML = "<i> Aktiver Filter: " +
+            this.filterName + ` (${this.trashData.length} Einträge)`;
+          return div;
+        }
+        this.maplegend.addTo(this.map);
+      }
+    }
   }
 
 };
