@@ -1,5 +1,22 @@
 <template>
   <v-app>
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="timeout"
+      tile
+      color="error"
+    >
+      {{ error }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="snackbar = false"
+        >
+          Schließen
+        </v-btn>
+      </template>
+    </v-snackbar>
     <v-tabs
       v-model="tab">
       <!-- tabs definition -->
@@ -47,6 +64,9 @@ export default {
     Map: Map
   },
   data: () => ({
+    snackbar: false,
+    timeout: 2000,
+    error: "",
     trashData: [],
     filter: () => true,
     filterName: "",
@@ -63,6 +83,7 @@ export default {
       }
   }),
   mounted() {
+    this.$root.$on('update:error', (error) => this.showError(error) );
     this.fetchDummyData();
   },
   computed: {
@@ -90,6 +111,11 @@ export default {
       this.filter = e.fn ? e.fn : () => true;
       this.filterName = e.label || ""
     },
+    showError(error) {
+      this.snackbar = true;
+      this.error = error || "unbekannter Fehler";
+    },
+
     // TODO Management firebase
     useFireBase() {
       initializeApp(this.firebaseConfig);

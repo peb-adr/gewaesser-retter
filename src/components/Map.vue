@@ -117,6 +117,7 @@ export default {
     // listen to the root trigger "requestzoom", which listens to the Table
     // component. Do a zoom!
     this.$root.$on('requestzoom', coords => this.zoomTo(coords));
+    window.addEventListener('resize', () => this.map.invalidateSize());
   },
 
   methods: {
@@ -250,14 +251,22 @@ export default {
         this.positionPing(evt.latlng);
         this.contextlatlng = evt.latlng;
         // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
+        if (evt.accuracy > 1500) {
+          this.$root.$emit("update:error",
+            "Positionsbestimmung ist sehr ungenau");
+        }
       })
-      this.map.once('locationError', (err) => console.log(err)
+      this.map.once('locationerror', (err) => {
+        let error = "Position konnte nicht ermittelt werden";
+        if (err.code === 1) {
+          error += ": Keine Berechtigung";
+        this.$root.$emit("update:error", error);
       // see https://leafletjs.com/reference-1.7.1.html#map-locationerror
-      //TODO: some feedback
       // err.code 1 PERMISSION_DENIED
       // 2 POSITION_UNAVAILABLE
       // 3 TIMEOUT
-      )
+        }
+      })
     },
   }
 

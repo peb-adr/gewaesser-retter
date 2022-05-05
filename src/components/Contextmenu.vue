@@ -32,7 +32,7 @@ export default {
      */
     newTrash(){
       this.positionPing();
-      // TODO open form, remove marker
+      this.$root.$emit("update:error", "TODO: Weiterleitung noch nicht implementiert");
     },
 
     /**
@@ -40,7 +40,7 @@ export default {
      */
     newAktion(){
       this.positionPing();
-      // open form, remove marker
+      this.$root.$emit("update:error", "TODO: Weiterleitung noch nicht implementiert");
     },
 
     /**
