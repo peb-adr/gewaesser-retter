@@ -40,10 +40,10 @@
         </v-tab-item>
         <v-tab-item>
           <Table
-          v-bind:trashData="filteredTrashData"
-          v-on:update:mapitem="updateItem"
-          v-on:update:filter="updateFilter"
-        />
+            v-bind:trashData="filteredTrashData"
+            v-on:update:mapitem="updateItem"
+            v-on:update:filter="updateFilter"
+          />
         </v-tab-item>
       </v-tabs-items>
     </v-tabs>
@@ -52,9 +52,14 @@
 </template>
 
 <script>
-
-import { initializeApp } from 'firebase/app';
-import { getDatabase } from "firebase/database";
+import { initializeApp } from "firebase/app";
+import {
+  getDatabase,
+  ref,
+  onChildAdded,
+  onChildChanged,
+  onChildRemoved,
+} from "firebase/database";
 import Table from "./Table.vue";
 import Map from "./Map.vue";
 
@@ -79,19 +84,20 @@ export default {
       projectId: process.env.VUE_APP_projectId,
       storageBucket: process.env.VUE_APP_storageBucket,
       messagingSenderId: process.env.VUE_APP_messagingSenderId,
-      appId: process.env.VUE_APP_messagingSenderId
-      }
+      appId: process.env.VUE_APP_messagingSenderId,
+    },
   }),
   mounted() {
-    this.$root.$on('update:error', (error) => this.showError(error) );
-    this.fetchDummyData();
+    this.$root.$on("update:error", (error) => this.showError(error));
+    // this.fetchDummyData();
+    this.useFireBase();
   },
   computed: {
     filteredTrashData: {
       get() {
         return this.trashData.filter(this.filter);
-      }
-    }
+      },
+    },
   },
   methods: {
     fetchDummyData() {
@@ -103,130 +109,57 @@ export default {
         });
       });
     },
-    updateItem(e){
+    updateItem(e) {
       this.infoItem = e;
       this.tab = 0;
     },
-    updateFilter (e) {
+    updateFilter(e) {
       this.filter = e.fn ? e.fn : () => true;
-      this.filterName = e.label || ""
+      this.filterName = e.label || "";
     },
     showError(error) {
       this.snackbar = true;
       this.error = error || "unbekannter Fehler";
     },
 
-    // TODO Management firebase
     useFireBase() {
       initializeApp(this.firebaseConfig);
       this.db = getDatabase();
-      this.featuresRef = this.db.ref("/features");
-      this.trashData = this.getSynchronizedArray(this.featuresRef);
-
-      this.wrapLocalCrudOps(this.trashData, this.featuresRef); // TODO ???
+      this.featuresRef = ref(this.db, "/features");
+      this.trashData = this.getSynchronizedData(this.featuresRef);
     },
 
-    getSynchronizedArray(firebaseRef) {
+    getSynchronizedData(firebaseRef) {
       let list = [];
       this.syncChanges(list, firebaseRef);
-      this.wrapLocalCrudOps(list, firebaseRef);
       return list;
     },
 
     syncChanges(list, ref) {
-      function positionFor(list, key) {
-        for (let i = 0, len = list.length; i < len; i++) {
-          if (list[i].$id === key) {
-            return i;
-          }
-        }
-        return -1;
-      }
-      // using the Firebase API's prevChild behavior, we
-      // place each element in the list after it's prev
-      // sibling or, if prevChild is null, at the beginning
-      function positionAfter(list, prevChild) {
-        if (prevChild === null) {
-          return 0;
+      onChildAdded(ref, (snap) => {
+        const data = snap.val();
+        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
+        if (idx > -1) {
+          list[idx] = data;
         } else {
-          let i = positionFor(list, prevChild);
-          if (i === -1) {
-            return list.length;
-          } else {
-            return i + 1;
-          }
-        }
-      }
-      ref.on("child_added", function _add(snap, prevChild) {
-        let data = snap.val();
-        data.$id = snap.key; // assumes data is always an object
-        const pos = positionAfter(list, prevChild);
-        list.splice(pos, 0, data);
-      });
-
-      ref.on("child_removed", function _remove(snap) {
-        const i = positionFor(list, snap.key);
-        if (i > -1) {
-          list.splice(i, 1);
+          list.push(data);
         }
       });
 
-      ref.on("child_changed", function _change(snap) {
-        //var i = positionFor(list, snap.key);
-        const i = list.findIndex(
-          x => x.properties.RasterID === snap.val().properties.RasterID
-        );
-        if (i > -1) {
-          list.splice(i, 1, snap.val());
-          list[i].$id = snap.key;
+      onChildRemoved(ref, (snap) => {
+        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
+        if (idx > -1) {
+          list.splice(idx, 1);
         }
       });
 
-      ref.on("child_moved", function _move(snap, prevChild) {
-        const curPos = positionFor(list, snap.key);
-        if (curPos > -1) {
-          const data = list.splice(curPos, 1)[0];
-          const newPos = positionAfter(list, prevChild);
-          list.splice(newPos, 0, data);
+      onChildChanged(ref, (snap) => {
+        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
+        if (idx > -1) {
+          list.splice(idx, 1, snap.val());
         }
       });
     },
-
-    wrapLocalCrudOps(list, firebaseRef) {
-      function positionFor(list, key) {
-        for (let i = 0, len = list.length; i < len; i++) {
-          if (list[i].$id === key) {
-            return i;
-          }
-        }
-        return -1;
-      }
-      // we can hack directly on the array to provide some convenience methods
-      list.$add = function(data) {
-        if (Object.prototype.hasOwnProperty.call(data, "$id")) {
-          delete data.$id;
-        }
-        return firebaseRef.push(data);
-      };
-
-      list.$remove = function(key) {
-        firebaseRef.child(key).remove();
-      };
-
-      list.$set = function(key, newData) {
-        // make sure we don't accidentally push our $id prop
-        if (Object.prototype.hasOwnProperty.call(newData, "$id")) {
-          delete newData.$id;
-        }
-        firebaseRef.child(key).set(newData);
-      };
-
-      list.$indexOf = function(key) {
-        return positionFor(list, key);
-      };
-    },
-
   }
-}
-
+};
 </script>
