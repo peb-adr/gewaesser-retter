@@ -2,12 +2,8 @@
 <v-card elevation="5">
   <v-list>
     <v-list-item
-      @click="newTrash()">
-      Hier eintragen: Müllsammlung
-    </v-list-item>
-    <v-list-item
       @click="newAktion()">
-      Hier eintragen: geplante Aktion
+      Hier eintragen: Aktion
     </v-list-item>
     <v-list-item
       @click="geolocateMe()">
@@ -25,22 +21,18 @@ export default {
   props: {
     latlng: Object
   },
+  data: () => ({
+    aktionUrl: process.env.VUE_APP_aktionUrl
+  }),
   methods: {
-    /**
-     * TODO: triggers a redirect/popup to an external "add new trash
-     * collection" form
-     */
-    newTrash(){
-      this.positionPing();
-      this.$root.$emit("update:error", "TODO: Weiterleitung noch nicht implementiert");
-    },
 
     /**
-     * TODO: triggers a redirect/popup to an external "add new Aktion" form
+     * Triggers a redirect/popup to an external "add new Aktion" form
      */
     newAktion(){
-      this.positionPing();
-      this.$root.$emit("update:error", "TODO: Weiterleitung noch nicht implementiert");
+      this.$emit('update:zoom', { latlng: this.latlng, url: this.aktionUrl });
+      // event to close the context menu
+      this.$emit('update:togglecontext');
     },
 
     /**
@@ -50,18 +42,6 @@ export default {
      */
     geolocateMe(){
       this.$emit('geolocate');
-      this.$emit('update:togglecontext');
-    },
-
-    /**
-     * Triggers a zoom to the position and a short(ish) appearance of a marker.
-     * Probably useful to give an initial feedback on "this is where we think
-     * you clicked"
-     */
-    positionPing(){
-      this.$emit('update:zoom', this.latlng);
-
-      // event to close the context menu
       this.$emit('update:togglecontext');
     }
   }

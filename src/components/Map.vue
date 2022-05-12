@@ -228,9 +228,10 @@ export default {
 
     // helper: Sets a zoom, shortly a marker, to give a feedback on where the
     // requesting event happened
-    positionPing(latlng){
-      this.zoomTo([latlng.lng, latlng.lat]);
-      const layer = new L.marker(latlng, {
+    // content: { latlng, url(optional) }
+    positionPing(content){
+      this.zoomTo([content.latlng.lng, content.latlng.lat]);
+      const layer = new L.marker(content.latlng, {
         icon: L.icon({
           iconUrl: 'map-pin-solid.png',
           iconSize: [30, 40],
@@ -238,12 +239,13 @@ export default {
         })
       });
       layer.addTo(this.map);
-      setTimeout(()=> this.map.removeLayer(layer), 1500);
+      setTimeout(()=> {
+        this.map.removeLayer(layer);
+        if (content.url) {
+          window.open(content.url,'_blank');
+        }
+      }, 1500);
     },
-
-    // TODO setFilter sets or unsets a filter
-    // modifyPoint: adds or removes a single entry - to be used if the backend
-      // only changes one item
 
     /**
     * Tries to get the current gps- Position. Depends on geo availability and
@@ -252,7 +254,7 @@ export default {
     geolocateMe(){
       this.map.locate({timeout: 15000});
       this.map.once('locationfound', (evt) => {
-        this.positionPing(evt.latlng);
+        this.positionPing({ latlng: evt.latlng });
         this.contextlatlng = evt.latlng;
         // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
         if (evt.accuracy > 1500) {
@@ -282,7 +284,7 @@ export default {
         this.maplegend.remove();
         this.maplegend.onAdd = () => {
           const div = L.DomUtil.create('div', 'legend');
-          div.innerHTML = "<i> Aktiver Filter: " +
+          div.innerHTML = "<i> Aktiver Filter:<br />" +
             this.filterName + ` (${this.trashData.length} Einträge)`;
           return div;
         }
