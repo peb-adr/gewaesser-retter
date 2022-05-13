@@ -138,7 +138,7 @@ export default {
     syncChanges(list, ref) {
       onChildAdded(ref, (snap) => {
         const data = snap.val();
-        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
+        const idx = list.findIndex((i) => i.properties.publicId.toString() === snap.key);
         if (idx > -1) {
           list[idx] = data;
         } else {
@@ -147,14 +147,14 @@ export default {
       });
 
       onChildRemoved(ref, (snap) => {
-        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
+        const idx = list.findIndex((i) => i.properties.publicId.toString() == snap.key);
         if (idx > -1) {
           list.splice(idx, 1);
         }
       });
 
       onChildChanged(ref, (snap) => {
-        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
+        const idx = list.findIndex((i) => i.properties.publicId.toString() === snap.key);
         if (idx > -1) {
           list.splice(idx, 1, snap.val());
         }

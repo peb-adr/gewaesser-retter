@@ -30,7 +30,9 @@ export default {
      * Triggers a redirect/popup to an external "add new Aktion" form
      */
     newAktion(){
-      this.$emit('update:zoom', { latlng: this.latlng, url: this.aktionUrl });
+      // aktionUrl from environment variable, attaching lat and lng at the end
+      const url = `${this.aktionUrl}&lat=${this.latlng.lat}&lng=${this.latlng.lng}`;
+      this.$emit('update:zoom', { latlng: this.latlng, url: url });
       // event to close the context menu
       this.$emit('update:togglecontext');
     },
