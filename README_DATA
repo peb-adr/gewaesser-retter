@@ -1,13 +1,15 @@
 Work in progress:
 
-publicId: unique identifier
-name: display name
+uuidPublic: unique identifier
+aktionsname: display name
 type:
  * trash : collected trash
- * aktion: a trash collection event
-done:
- * to indicate whether an aktion has terminated
-date: data entry time (ISO)
-planned: for actions: date of action
-url: external url to show details not in database (e.g. contacts)
+ * campaign / closed: a trash collection event
+datum:
+uhrzeit:
+veranstalter:
+beschreibung:
+
+url: external url to show details not in database (e.g. contacts) - if present,
+  it will try to open in an optional small iframe in the info box
 

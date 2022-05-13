@@ -89,7 +89,6 @@ export default {
   }),
   mounted() {
     this.$root.$on("update:error", (error) => this.showError(error));
-    // this.fetchDummyData();
     this.useFireBase();
   },
   computed: {
@@ -100,15 +99,6 @@ export default {
     },
   },
   methods: {
-    fetchDummyData() {
-      fetch("dummydata.json").then((response) => {
-        response.json().then((data) => {
-          this.trashData = data.features.filter(
-            (f) => f.geometry && f.geometry.coordinates.length
-          );
-        });
-      });
-    },
     updateItem(e) {
       this.infoItem = e;
       this.tab = 0;
@@ -125,7 +115,7 @@ export default {
     useFireBase() {
       initializeApp(this.firebaseConfig);
       this.db = getDatabase();
-      this.featuresRef = ref(this.db, "/features");
+      this.featuresRef = ref(this.db, "/data");
       this.trashData = this.getSynchronizedData(this.featuresRef);
     },
 
@@ -138,7 +128,7 @@ export default {
     syncChanges(list, ref) {
       onChildAdded(ref, (snap) => {
         const data = snap.val();
-        const idx = list.findIndex((i) => i.properties.publicId.toString() === snap.key);
+        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
         if (idx > -1) {
           list[idx] = data;
         } else {
@@ -147,14 +137,14 @@ export default {
       });
 
       onChildRemoved(ref, (snap) => {
-        const idx = list.findIndex((i) => i.properties.publicId.toString() == snap.key);
+        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
         if (idx > -1) {
           list.splice(idx, 1);
         }
       });
 
       onChildChanged(ref, (snap) => {
-        const idx = list.findIndex((i) => i.properties.publicId.toString() === snap.key);
+        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
         if (idx > -1) {
           list.splice(idx, 1, snap.val());
         }

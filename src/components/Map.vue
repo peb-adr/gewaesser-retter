@@ -148,12 +148,8 @@ export default {
         removeOutsideVisibleBounds: true,
         showCoverageOnHover: false,
         iconCreateFunction: function (cluster) {
-          const childs = cluster.getAllChildMarkers();
-          const iconClass = childs.find(f => f.feature.properties.type === 'aktion') ?
-              childs.find(f=> f.feature.properties.type === 'trash' ) ?
-                "aktionandtrash" :
-                "aktion":
-                "trash";
+          //TODO: chose different
+          const iconClass = "aktion";
           return L.divIcon({
             html: '<div class="divIconCluster ' +
                 iconClass +
@@ -168,15 +164,15 @@ export default {
       // defining how to sort/filter the categories for different symbols
       const categories = [
         {
-          featureFilter: f => f.properties.type === 'trash',
+          featureFilter: f => f.properties.type === '',
           iconClass: 'trash'
         },
         {
-          featureFilter: f => f.properties.type === 'aktion' && f.properties.done,
+          featureFilter: f => f.properties.type === 'closed',
           iconClass: 'aktion-done'
         },
         {
-          featureFilter: f => f.properties.type === 'aktion' && !f.properties.done,
+          featureFilter: f => f.properties.type === 'campaign',
           iconClass: 'aktion'
         }
       ]
@@ -186,7 +182,9 @@ export default {
           "type": "FeatureCollection",
           "features": this.trashData.filter(category.featureFilter)
         };
-
+        if (!json.features.length){
+          continue;
+        }
         // creating a leaflet layer
         const layer = L.geoJSON(json, {
           pointToLayer: function(feature, latlng) {
@@ -194,9 +192,7 @@ export default {
               icon: L.divIcon({
                 html: '<div class="divIconCluster ' +
                   category.iconClass +
-                  '"</div><div class="myMarkerString">'
-                  + feature.properties.name.replace(/</g, "&#60;") +
-                  '</div>',
+                  '"</div><div class="myMarkerString" />',
                 iconSize: [40, 40],
                 className: ""
               })
@@ -207,8 +203,10 @@ export default {
             layer.bindTooltip(
               String(
                 "<b>" +
-                feature.properties["name"].replace(/</g, "&#60;") +
-                "</b>"
+                feature.properties["aktionsname"].replace(/</g, "&#60;") +
+                "<br><i>" +
+                feature.properties["veranstalter"].replace(/</g, "&#60;") +
+                "</i></b>"
               ), {
                 direction: "right",
                 offset: [10, 10]

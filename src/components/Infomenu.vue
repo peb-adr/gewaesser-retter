@@ -1,8 +1,10 @@
 <template>
   <v-card v-if="item" elevation="2">
-    {{ item.name }} <br/> <v-btn @click="zoomTo()">zoom </v-btn>
-    {{ item.type }} <br/>
-    {{ item.date }} <br/>
+   <v-btn @click="zoomTo()">zoom </v-btn> <br />
+    {{ item.aktionsname }} <br />
+    {{ item.veranstalter }} <br />
+    {{ item.datum }} <br />
+    {{ item.beschreibung }}<br />
     <iframe
       v-if="item.url"
       :src="item.url"
