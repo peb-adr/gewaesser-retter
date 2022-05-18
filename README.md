@@ -9,12 +9,17 @@ database. It contains an interactive map, and a list of summaries.
 yarn install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles and hot-reloads for development.
+
+Needs environmental data in ./.env.development
+
 ```
 yarn serve
 ```
 
-### Compiles and minifies for production
+### Compiles and minifies for production.
+
+Needs environmental data in ./.env.production
 ```
-yarn build
+yarn build --production
 ```
