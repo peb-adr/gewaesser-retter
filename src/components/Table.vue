@@ -3,7 +3,7 @@
     <v-data-table
       :headers="tableHeader"
       :items="currentData"
-      item-key="publicId"
+      item-key="uuidPublic"
       :options="tableOptions"
       :hide-default-footer="true"
       :items-per-page="-1"
@@ -32,8 +32,7 @@
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
           <v-card flat>
-            ID: {{ item.publicId }} <br />
-            {{ getDoneText(item) }}
+            {{ item.beschreibung }}
             <iframe v-if="item.url" :src="item.url" frameBorder="0" />
           </v-card>
         </td>
@@ -54,7 +53,7 @@ export default {
   data: () => ({
     expanded: [],
     tableOptions: {
-      sortBy: ["date", "planned", "name"],
+      sortBy: ["datum", "veranstalter", "aktionsname"],
       sortDesc: [false, false, false],
       mustSort: true
     },
@@ -67,21 +66,36 @@ export default {
       {
         text: "Name",
         align: "left",
-        value: "name",
+        value: "aktionsname",
         sortable: true,
       },
       {
-        text: "Typ",
+        text: "Veranstalter",
         align: "left",
-        value: "type",
+        value: "veranstalter",
         sortable: true,
       },
       {
-        text: "Eintrag",
+        text: "Datum",
         align: "left",
-        value: "date",
+        value: "datum",
         sortable: true,
-      },{ text: "", value: "data-table-expand" },
+        sort: (a, b) => {
+          const as = a.split('.');
+          const bs = b.split('.');
+          return new Date(`${as[2]}-${as[1]}-${as[0]}`) - new Date(`${bs[2]}-${bs[1]}-${bs[0]}`)
+        }
+      },
+      {
+        text: "Uhrzeit",
+        align: "left",
+        value: "uhrzeit",
+        sortable: false,
+      },
+      {
+        text: "",
+        value: "data-table-expand"
+        },
     ],
     currentData: [],
     filter: "Alle",
@@ -123,16 +137,6 @@ export default {
         this.$emit("update:mapitem", item);
       }
     },
-
-    getDoneText(item) {
-      if (item.type === "aktion") {
-        return item.done ?
-          "Aktion hat bereits stattgefunden" :
-          "Aktion hat noch nicht stattgefunden";
-      } else {
-        return ""
-      }
-    }
   },
 };
 </script>
