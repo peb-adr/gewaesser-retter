@@ -99,6 +99,11 @@ export default {
     },
   },
   methods: {
+    isValidGeoJson(item) {
+        return item.type === "Feature" &&
+        item.geometry &&
+        item.geometry.coordinates.length;
+    },
     updateItem(e) {
       this.infoItem = e;
       this.tab = 0;
@@ -128,11 +133,15 @@ export default {
     syncChanges(list, ref) {
       onChildAdded(ref, (snap) => {
         const data = snap.val();
-        const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
-        if (idx > -1) {
-          list[idx] = data;
+        if (!this.isValidGeoJson(data)) {
+          console.log("invalid data :" + snap.key)
         } else {
-          list.push(data);
+          const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
+          if (idx > -1) {
+            list[idx] = data;
+          } else {
+            list.push(data);
+          }
         }
       });
 
@@ -145,8 +154,12 @@ export default {
 
       onChildChanged(ref, (snap) => {
         const idx = list.findIndex((i) => i.properties.uuidPublic === snap.key);
-        if (idx > -1) {
-          list.splice(idx, 1, snap.val());
+        if (!this.isValidGeoJson(snap.val())) {
+          console.log("invalid data: " + snap.key)
+        } else {
+          if (idx > -1) {
+            list.splice(idx, 1, snap.val());
+          }
         }
       });
     },
