@@ -2,20 +2,18 @@
   <div>
     <div id="mapId" class="map" />
     <div class="infomenu" v-if="infoItem">
-      <Infomenu
-        v-bind:infoItem="infoItem"
-        v-on:update:zoom="zoomTo"
-      />
+      <Infomenu v-bind:infoItem="infoItem" v-on:update:zoom="zoomTo" />
     </div>
-    <div class="contextmenu"
+    <div
+      class="contextmenu"
       v-if="contextmenu"
-      :style="{ top:contexttop + 'px', left:contextleft + 'px'}"
+      :style="{ top: contexttop + 'px', left: contextleft + 'px' }"
     >
       <Contextmenu
-      v-bind:latlng="contextlatlng"
-      v-on:update:zoom="positionPing"
-      v-on:geolocate="geolocateMe"
-      v-on:update:togglecontext="contextmenu=false"
+        v-bind:latlng="contextlatlng"
+        v-on:update:zoom="positionPing"
+        v-on:geolocate="geolocateMe"
+        v-on:update:togglecontext="contextmenu = false"
       />
     </div>
   </div>
@@ -148,14 +146,26 @@ export default {
         removeOutsideVisibleBounds: true,
         showCoverageOnHover: false,
         iconCreateFunction: function (cluster) {
-          //TODO: chose different
-          const iconClass = "aktion";
+          const childs = cluster.getAllChildMarkers();
+          const finding = childs.find(f=> f.feature.properties.type === 'finding');
+          const campaign = childs.find(f=> f.feature.properties.type === 'campaign');
+          const closed = childs.find(f=> f.feature.properties.type === 'closed');
+          let iconClass = "";
+          if (finding) {
+            if (campaign || closed) {
+              iconClass = 'aktionandtrash';
+            } else {
+              iconClass = 'trash';
+            }
+          } else {
+            iconClass = 'aktion'
+          }
           return L.divIcon({
             html: '<div class="divIconCluster ' +
-                iconClass +
-              '"></div><div class="myMarkerCluster">' +
-                cluster.getChildCount() +
-                "</div>",
+            iconClass +
+            '"></div><div class="myMarkerCluster">' +
+            cluster.getChildCount() +
+            "</div>",
               iconSize: [40, 40],
               className: ""
             });
@@ -164,7 +174,7 @@ export default {
       // defining how to sort/filter the categories for different symbols
       const categories = [
         {
-          featureFilter: f => f.properties.type === '',
+          featureFilter: f => f.properties.type === 'finding',
           iconClass: 'trash'
         },
         {
@@ -292,7 +302,6 @@ export default {
   }
 
 };
-
 </script>
 <style>
 .map {
@@ -316,7 +325,7 @@ export default {
   color: black;
   z-index: 999;
   top: 0px;
-  left:0px;
+  left: 0px;
 }
 
 .divIconCluster {
@@ -363,9 +372,8 @@ export default {
   height: 2.3em;
   line-height: normal;
   overflow: hidden;
-  color:#777777;
+  color: #777777;
   font-weight: bold;
   font-style: italic;
 }
-
 </style>
