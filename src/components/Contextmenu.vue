@@ -1,6 +1,6 @@
 <template>
-<v-card elevation="5">
-  <v-list>
+<v-card elevation="5" class="contextmenu-card">
+  <v-list dense>
   <v-list-item
       @click="newAktion('fund')">
       Hier eintragen: Einzelfund
@@ -56,3 +56,9 @@ export default {
   }
 };
 </script>
+
+<style>
+.contextmenu-card {
+  border-radius: 0px 10px 10px 10px !important;
+}
+</style>

@@ -202,7 +202,7 @@ export default {
               icon: L.divIcon({
                 html: '<div class="divIconCluster ' +
                   category.iconClass +
-                  '"</div><div class="myMarkerString" />',
+                  '"</div><div class="myMarkerString" />', // + feature.properties.datum + '</div>'
                 iconSize: [40, 40],
                 className: ""
               })
@@ -311,19 +311,17 @@ export default {
 .infomenu {
   position: absolute;
   bottom: 5%;
-  right: 5%;
-  background: rgb(255, 255, 255);
+  right: 2.5%;
   color: black;
-  z-index: 999;
+  z-index: 498;
   width: 300x;
   max-width: 300px;
 }
 
 .contextmenu {
   position: absolute;
-  background: rgb(255, 255, 255);
   color: black;
-  z-index: 999;
+  z-index: 499;
   top: 0px;
   left: 0px;
 }
@@ -373,6 +371,7 @@ export default {
   line-height: normal;
   overflow: hidden;
   color: #777777;
+  font-size:60%;
   font-weight: bold;
   font-style: italic;
 }
