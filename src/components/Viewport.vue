@@ -26,7 +26,7 @@
       <v-tab>
         Details
       </v-tab>
-      <v-tabs-items v-model="tab">
+      <v-tabs-items v-model="tab" touchless>
       <!-- tabs details -->
         <v-tab-item>
           <Map
