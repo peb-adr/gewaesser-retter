@@ -98,7 +98,7 @@ export default {
         },
     ],
     currentData: [],
-    filter: "Alle",
+    filter: filters[0].label,
     filterOptions: filters
   }),
   computed: {

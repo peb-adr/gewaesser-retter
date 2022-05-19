@@ -62,6 +62,7 @@ import {
 } from "firebase/database";
 import Table from "./Table.vue";
 import Map from "./Map.vue";
+import filters from "./filters.js"
 
 export default {
   components: {
@@ -73,8 +74,8 @@ export default {
     timeout: 2000,
     error: "",
     trashData: [],
-    filter: () => true,
-    filterName: "Alle",
+    filter: filters[0].fn,
+    filterName: filters[0].label,
     infoItem: null,
     tab: 0,
     firebaseConfig: {
