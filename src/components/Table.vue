@@ -5,8 +5,8 @@
       :items="currentData"
       item-key="uuidPublic"
       :options="tableOptions"
-      :hide-default-footer="true"
-      :items-per-page="-1"
+
+      :items-per-page="10"
       no-data-text="Keine Daten gefunden"
       @dblclick:row="onDblClick"
       show-expand
@@ -33,7 +33,14 @@
         <td :colspan="headers.length">
           <v-card flat>
             {{ item.beschreibung }}
-            <iframe v-if="item.url" :src="item.url" frameBorder="0" />
+          </v-card>
+          <v-card flat v-if="item.funde">
+          Funde: <br />
+            <p v-for="(value, name, index) in item.funde" v-bind:value="value"
+              v-bind:key="index" class="intable"
+              >
+              {{ name }} : {{ value }}
+              </p>
           </v-card>
         </td>
       </template>
@@ -140,3 +147,9 @@ export default {
   },
 };
 </script>
+
+<style>
+.intable::first-letter {
+    text-transform:capitalize;
+}
+</style>

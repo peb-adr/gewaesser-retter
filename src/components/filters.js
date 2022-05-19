@@ -9,6 +9,10 @@ const getDate = (input) => {
 
 const filters = [
   {
+    label: "Alle",
+    fn: () => true,
+  },
+  {
     label: "Dieses Jahr",
     fn: (i) => getDate(i.properties.datum).getFullYear() === year,
   },
@@ -41,10 +45,6 @@ const filters = [
   {
     label: "Zukünftig",
     fn: (i) => getDate(i.properties.datum) > new Date(),
-  },
-  {
-    label: "Alle",
-    fn: () => true,
   }
 ];
 export default filters;
