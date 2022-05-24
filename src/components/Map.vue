@@ -41,7 +41,8 @@ export default {
   props: {
     trashData: Array,
     infoItem: Object,
-    filterName: String
+    filterName: String,
+    tabchange: String
   },
   data: () => ({
     // describes the background openstreetmap layer
@@ -82,6 +83,9 @@ export default {
     },
     filterName() {
       this.addLegend();
+    },
+    tabChange() {
+      this.map.invalidateSize();
     }
   },
 

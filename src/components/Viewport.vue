@@ -33,6 +33,7 @@
             v-bind:trashData="filteredTrashData"
             v-bind:infoItem="infoItem"
             v-bind:filterName="filterName"
+            v-bind:tabchange="tab"
             v-on:update:mapitem="updateItem"
           />
           <!-- binding data makes children get the updates -->
