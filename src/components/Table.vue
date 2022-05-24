@@ -5,25 +5,12 @@
       :items="currentData"
       item-key="uuidPublic"
       :options="tableOptions"
-
       :items-per-page="10"
       no-data-text="Keine Daten gefunden"
       @dblclick:row="onDblClick"
       show-expand
       :expanded.sync="expanded"
     >
-      <template v-slot:top>
-        <v-toolbar flat>
-          <v-select
-            v-model="filter"
-            :items="filters"
-            label="Filter"
-            return-object
-            solo
-            @change="updateFilter()"
-          />
-        </v-toolbar>
-      </template>
       <template v-slot:item.tableaction="{ item }">
         <v-icon @click.stop="onDblClick(null, {item})">
           mdi-target
@@ -49,8 +36,6 @@
 </template>
 
 <script>
-// external filter definitions
-import filters from "./filters.js"
 
 export default {
   props: {
@@ -104,17 +89,8 @@ export default {
         value: "data-table-expand"
         },
     ],
-    currentData: [],
-    filter: filters[0].label,
-    filterOptions: filters
+    currentData: []
   }),
-  computed: {
-    filters: {
-      get() {
-        return this.filterOptions.map(o => o.label);
-      }
-    }
-  },
   watch: {
     // watcher that triggers as soon as trashData gets an update.
     trashData() {
@@ -132,15 +108,14 @@ export default {
     sortData() {
       this.currentData = this.trashData.map(f => f.properties);
     },
-    updateFilter() {
-      const filter = this.filterOptions.find(f => this.filter === f.label);
-      this.$emit("update:filter", filter);
-    },
 
     onDblClick(ev, ev2) {
       const item = this.trashData.find(t => t.properties === ev2.item);
       if (item) {
-        this.$root.$emit("requestzoom", item.geometry.coordinates);
+        this.$root.$emit("requestzoom", {latlng: {
+          lat: item.geometry.coordinates[1],
+          lng: item.geometry.coordinates[0]
+      }});
         this.$emit("update:mapitem", item);
       }
     },

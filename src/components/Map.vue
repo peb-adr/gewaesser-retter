@@ -12,7 +12,6 @@
       <Contextmenu
         v-bind:latlng="contextlatlng"
         v-on:update:action="initiateAktion"
-        v-on:geolocate="geolocateMe"
         v-on:update:togglecontext="contextmenu = false"
       />
     </div>
@@ -23,8 +22,6 @@
 import * as L from "leaflet";
 import "../../node_modules/leaflet.markercluster/dist/leaflet.markercluster.js";
 import "../../node_modules/leaflet.markercluster/dist/MarkerCluster.css";
-import "../../node_modules/leaflet.defaultextent/dist/leaflet.defaultextent.css";
-import "../../node_modules/leaflet.defaultextent/dist/leaflet.defaultextent.js";
 import "../../node_modules/leaflet/dist/leaflet.css";
 import Infomenu from "./Infomenu";
 import Contextmenu from "./Contextmenu";
@@ -41,8 +38,7 @@ export default {
   props: {
     trashData: Array,
     infoItem: Object,
-    filterName: String,
-    tabchange: String
+    tabchange: Number
   },
   data: () => ({
     // describes the background openstreetmap layer
@@ -81,9 +77,6 @@ export default {
     trashData() {
       this.buildData();
     },
-    filterName() {
-      this.addLegend();
-    },
     tabChange() {
       this.map.invalidateSize();
     }
@@ -101,8 +94,7 @@ export default {
       maxZoom: 16,
       minZoom: 5,
       fadeAnimation: false,
-      zoomControl: false,
-      defaultExtentControl: true
+      zoomControl: false
     });
     // add background and feature layer
     this.osm.addTo(this.map);
@@ -133,7 +125,11 @@ export default {
     this.buildData();
     // listen to the root trigger "requestzoom", which listens to the Table
     // component. Do a zoom!
-    this.$root.$on('requestzoom', coords => this.zoomTo(coords));
+    this.$root.$on('requestzoom', content => {
+      const zoom = content.level || 16;
+      this.map.setView(content.latlng, zoom);
+    });
+    this.$root.$on('geolocateme',this.geolocateMe);
     window.addEventListener('resize', () => this.map.invalidateSize());
   },
 
@@ -248,7 +244,6 @@ export default {
         cluster.addLayer(layer);
       }
       this.layergroup.addLayer(cluster);
-      this.addLegend();
     },
 
     // helper: Sets a zoom, shortly a marker, to give a feedback on where the
@@ -267,7 +262,7 @@ export default {
     geolocateMe(){
       this.map.locate({timeout: 15000});
       this.map.once('locationfound', (evt) => {
-        this.zoomTo([evt.latlng.lng, evt.latlng.lat]);
+        this.$root.$emit('requestzoom', { latlng: evt.latlng, level: 16});
         this.targetmarker.removeFrom(this.map);
         this.targetmarker.setLatLng(evt.latlng);
         this.targetmarker.addTo(this.map);
@@ -287,31 +282,31 @@ export default {
       // 3 TIMEOUT
         }
       })
-    },
-
-    /**
-     * Adds a (pseudo)-legend to the bottom left, currently showing the active
-     * filters and total amount of items
-     */
-    addLegend() {
-      if (this.map) {
-        this.maplegend.remove();
-        this.maplegend.onAdd = () => {
-          const div = L.DomUtil.create('div', 'legend');
-          div.innerHTML = "<i> Aktiver Filter:<br />" +
-            this.filterName + ` (${this.trashData.length} Einträge)`;
-          return div;
-        }
-        this.maplegend.addTo(this.map);
-      }
     }
+
+    // /**
+    //  * Adds a (pseudo)-legend to the bottom left, currently showing the active
+    //  * filters and total amount of items
+    //  */
+    // addLegend() {
+    //   if (this.map) {
+    //     this.maplegend.remove();
+    //     this.maplegend.onAdd = () => {
+    //       const div = L.DomUtil.create('div', 'legend');
+    //       div.innerHTML = "<i> Aktiver Filter:<br />" +
+    //         this.filterName + ` (${this.trashData.length} Einträge)`;
+    //       return div;
+    //     }
+    //     this.maplegend.addTo(this.map);
+    //   }
+    // }
   }
 
 };
 </script>
 <style>
 .map {
-  height: 80vh;
+  height: 90vh;
 }
 
 .infomenu {

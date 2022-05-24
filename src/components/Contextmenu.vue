@@ -5,10 +5,10 @@
       @click="newAktion('aktion')">
       Hier Sammelaktion anlegen
     </v-list-item>
-    <v-list-item class="item"
+    <!-- <v-list-item class="item"
       @click="geolocateMe()">
         Den aktuellen Standort finden
-    </v-list-item>
+    </v-list-item> -->
     <v-list-item class="item"
       @click="newAktion('fund')">
       Hier wurde Müll gesammelt
@@ -49,10 +49,10 @@ export default {
      * an "allow website to get position?" dialog (may not work or be well
      * hidden on some browsers)
      */
-    geolocateMe(){
-      this.$emit('geolocate');
-      this.$emit('update:togglecontext');
-    }
+    // geolocateMe(){
+    //   this.$root.emit('geolocateme');
+    //   this.$emit('update:togglecontext');
+    // }
   }
 };
 </script>

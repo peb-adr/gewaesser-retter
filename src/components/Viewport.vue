@@ -17,22 +17,48 @@
         </v-btn>
       </template>
     </v-snackbar>
+    <v-navigation-drawer v-model="drawer" absolute class="top" temporary>
+      <v-list nav dense>
+        <v-list-item-group>
+          <v-list-item-title>Filter: {{ filterName }} </v-list-item-title>
+          <v-list-item>
+            <v-select
+            v-model="filterName"
+            :items="filters"
+            label="Filter"
+            return-object
+            solo
+            @change="updateFilter"
+          />
+          </v-list-item>
+          <v-list-item @click="zoomToWorld">
+            Ausdehnung: Deutschland
+          </v-list-item>
+          <v-list-item @click="geolocate">
+            Finde meine Position
+          </v-list-item>
+
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
     <v-tabs
       v-model="tab">
-      <!-- tabs definition -->
+
       <v-tab>
         Karte
       </v-tab>
       <v-tab>
         Aktionen
       </v-tab>
+      <v-spacer />
+      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <!-- tabs definition -->
       <v-tabs-items v-model="tab" touchless>
       <!-- tabs details -->
         <v-tab-item>
           <Map
             v-bind:trashData="filteredTrashData"
             v-bind:infoItem="infoItem"
-            v-bind:filterName="filterName"
             v-bind:tabchange="tab"
             v-on:update:mapitem="updateItem"
           />
@@ -63,7 +89,7 @@ import {
 } from "firebase/database";
 import Table from "./Table.vue";
 import Map from "./Map.vue";
-import filters from "./filters.js"
+import filters from "./filters.js";
 
 export default {
   components: {
@@ -71,11 +97,13 @@ export default {
     Map: Map
   },
   data: () => ({
+    drawer: false,
     snackbar: false,
     timeout: 2000,
     error: "",
     trashData: [],
-    filter: filters[0].fn,
+    filterOptions: filters,
+    filterFn: filters[0].fn,
     filterName: filters[0].label,
     infoItem: null,
     tab: 0,
@@ -96,9 +124,14 @@ export default {
   computed: {
     filteredTrashData: {
       get() {
-        return this.trashData.filter(this.filter);
+        return this.trashData.filter(this.filterFn);
       },
     },
+    filters: {
+      get() {
+        return this.filterOptions.map(o => o.label);
+      }
+    }
   },
   methods: {
     isValidGeoJson(item) {
@@ -106,14 +139,25 @@ export default {
         item.geometry &&
         item.geometry.coordinates.length;
     },
+    updateFilter() {
+      const filter = this.filterOptions.find(f => this.filterName === f.label);
+      this.filterFn = filter.fn ? filter.fn : () => true;
+      this.filterName = `${filter.label} (${this.trashData.length} Einträge)`;
+      this.drawer = false;
+    },
     updateItem(e) {
       this.infoItem = e;
       this.tab = 0;
     },
-    updateFilter(e) {
-      this.filter = e.fn ? e.fn : () => true;
-      this.filterName = e.label || "";
-    },
+      zoomToWorld() {
+  this.$root.$emit("requestzoom", {latlng: {lat: 51, lng: 10}, level: 5});
+  this.drawer = false;
+  },
+  geolocate() {
+    this.$root.$emit("geolocateme");
+    this.drawer = false;
+  },
+
     showError(error) {
       this.snackbar = true;
       this.error = error || "unbekannter Fehler";
@@ -168,3 +212,9 @@ export default {
   }
 };
 </script>
+<style>
+.top {
+  z-index: 501 !important;
+}
+</style>
+
