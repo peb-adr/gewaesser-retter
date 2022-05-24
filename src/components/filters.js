@@ -4,7 +4,7 @@ const year = today.getFullYear();
 // translates german format "12.05.2022" (may 12) into correct Date
 const getDate = (input) => {
   const a = input.split('.');
-  return new Date(`${a[1]}-${a[0]}-${a[2]}`);
+  return new Date(`${a[2]}-${a[1]}-${a[0]}`);
 };
 
 const filters = [
