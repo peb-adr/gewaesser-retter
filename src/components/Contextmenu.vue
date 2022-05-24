@@ -39,7 +39,7 @@ export default {
       const url = type === 'aktion' ?
         `${this.aktionUrl}&lat=${this.latlng.lat}&lng=${this.latlng.lng}` :
         `${this.findingUrl}&lat=${this.latlng.lat}&lng=${this.latlng.lng}`
-      this.$emit('update:zoom', { latlng: this.latlng, url: url });
+      this.$emit('update:action', url);
       // event to close the context menu
       this.$emit('update:togglecontext');
     },
@@ -60,5 +60,11 @@ export default {
 <style>
 .contextmenu-card {
   border-radius: 0px 10px 10px 10px !important;
+}
+.item {
+  border: 1px solid gray;
+  border-radius: 5px;
+  background: #EEEEEE;
+  margin: 3px;
 }
 </style>

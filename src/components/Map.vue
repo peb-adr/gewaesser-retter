@@ -11,7 +11,7 @@
     >
       <Contextmenu
         v-bind:latlng="contextlatlng"
-        v-on:update:zoom="positionPing"
+        v-on:update:action="initiateAktion"
         v-on:geolocate="geolocateMe"
         v-on:update:togglecontext="contextmenu = false"
       />
@@ -62,7 +62,14 @@ export default {
     layergroup: L.featureGroup(),
 
     contextmenu: false, // toggle for the menu
-
+    targetmarker: new L.marker([0,0], {
+      icon: L.icon({
+        iconUrl: 'target.svg',
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+      }),
+      draggable: true
+      }),
      // (css) placement for the contextmenu on the canvas
     contextleft: 0,
     contexttop: 0
@@ -95,15 +102,21 @@ export default {
     });
     // add background and feature layer
     this.osm.addTo(this.map);
+    this.targetmarker.on('contextmenu', (evt) => {
+      this.contextmenu = false;
+      this.contextlatlng = this.targetmarker.getLatLng();
+      this.contextleft = evt.containerPoint.x;
+      this.contexttop = evt.containerPoint.y;
+      this.contextmenu = true;
+    });
     this.map.on({
       // trigger: right click/longpress. Overwrites default event listeners.
       // Opens the child element Contextmenu and sets it's position
       contextmenu: (evt) => {
+        this.targetmarker.removeFrom(this.map);
         this.contextmenu = false;
-        this.contextmenu = true;
-        this.contextlatlng = evt.latlng;
-        this.contextleft = evt.containerPoint.x;
-        this.contexttop = evt.containerPoint.y;
+        this.targetmarker.setLatLng(evt.latlng);
+        this.targetmarker.addTo(this.map);
       },
       // general click "somewhere". Closes the contextmenu or any selected
       // item
@@ -202,7 +215,7 @@ export default {
               icon: L.divIcon({
                 html: '<div class="divIconCluster ' +
                   category.iconClass +
-                  '"</div><div class="myMarkerString" />', // + feature.properties.datum + '</div>'
+                  '"</div><div class="myMarkerString" />',
                 iconSize: [40, 40],
                 className: ""
               })
@@ -237,22 +250,10 @@ export default {
     // helper: Sets a zoom, shortly a marker, to give a feedback on where the
     // requesting event happened
     // content: { latlng, url(optional) }
-    positionPing(content){
-      this.zoomTo([content.latlng.lng, content.latlng.lat]);
-      const layer = new L.marker(content.latlng, {
-        icon: L.icon({
-          iconUrl: 'map-pin-solid.png',
-          iconSize: [30, 40],
-          iconAnchor: [15, 40]
-        })
-      });
-      layer.addTo(this.map);
-      setTimeout(()=> {
-        this.map.removeLayer(layer);
-        if (content.url) {
-          window.open(content.url,'_blank');
-        }
-      }, 1500);
+    initiateAktion(url){
+        window.open(url,'_blank');
+        this.targetmarker.removeFrom(this.map);
+
     },
 
     /**
@@ -262,9 +263,10 @@ export default {
     geolocateMe(){
       this.map.locate({timeout: 15000});
       this.map.once('locationfound', (evt) => {
-        this.positionPing({ latlng: evt.latlng });
-        this.contextlatlng = evt.latlng;
-        // see https://leafletjs.com/reference-1.7.1.html#map-locationfound
+        this.zoomTo([evt.latlng.lng, evt.latlng.lat]);
+        this.targetmarker.removeFrom(this.map);
+        this.targetmarker.setLatLng(evt.latlng);
+        this.targetmarker.addTo(this.map);
         if (evt.accuracy > 1500) {
           this.$root.$emit("update:error",
             "Positionsbestimmung ist sehr ungenau");
