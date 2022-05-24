@@ -1,17 +1,17 @@
 <template>
 <v-card elevation="5" class="contextmenu-card">
   <v-list dense>
-  <v-list-item
-      @click="newAktion('fund')">
-      Hier eintragen: Einzelfund
-    </v-list-item>
-    <v-list-item
+    <v-list-item class="item"
       @click="newAktion('aktion')">
-      Hier eintragen: Aktion
+      Hier Sammelaktion anlegen
     </v-list-item>
-    <v-list-item
+    <v-list-item class="item"
       @click="geolocateMe()">
-        Gehe zu meiner Position
+        Den aktuellen Standort finden
+    </v-list-item>
+    <v-list-item class="item"
+      @click="newAktion('fund')">
+      Hier wurde Müll gesammelt
     </v-list-item>
   </v-list>
   </v-card>

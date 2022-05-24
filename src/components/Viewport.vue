@@ -24,7 +24,7 @@
         Karte
       </v-tab>
       <v-tab>
-        Details
+        Aktionen
       </v-tab>
       <v-tabs-items v-model="tab" touchless>
       <!-- tabs details -->

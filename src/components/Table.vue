@@ -26,7 +26,7 @@
       </template>
       <template v-slot:item.tableaction="{ item }">
         <v-icon @click.stop="onDblClick(null, {item})">
-          mdi-magnify
+          mdi-target
         </v-icon>
       </template>
       <template v-slot:expanded-item="{ headers, item }">

@@ -2,11 +2,11 @@
   <v-card v-if="item" elevation="5" class="infomenu-card">
     <h4>{{ item.aktionsname }}
     <v-icon @click.stop="zoomTo()">
-          mdi-magnify
+          mdi-target
         </v-icon></h4>
     <p v-if="item.veranstalter"><i>{{ item.veranstalter }} </i></p>
     {{ item.datum }}
-    <span v-if="item.uhrzeit">{{ item.uhrzeit}}h</span> <br />
+    <span v-if="item.uhrzeit"> um {{ item.uhrzeit}} Uhr</span> <br />
     <p v-if="item.beschreibung">{{ item.beschreibung }}</p>
     <iframe
       v-if="item.url"
