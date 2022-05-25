@@ -99,7 +99,7 @@ export default {
     });
     // add background and feature layer
     this.osm.addTo(this.map);
-    this.targetmarker.on('contextmenu', (evt) => {
+    this.targetmarker.on('click', (evt) => {
       this.contextmenu = false;
       this.contextlatlng = this.targetmarker.getLatLng();
       this.contextleft = evt.containerPoint.x;
