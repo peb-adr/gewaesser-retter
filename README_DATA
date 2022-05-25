@@ -1,15 +1,20 @@
-Work in progress:
+uuidPublic: String: unique identifier
+aktionsname: String: display name
+type: String:
+ * finding : collected trash
+ * campaign / closed: a trash collection event
+datum: String:  expects german date format (e.g. 13.05.2022 for May 13, 2022) to
+  properly sort and filter
+uhrzeit: String:
+veranstalter: String:
+beschreibung: String:
 
-uuidPublic: unique identifier
-aktionsname: display name
-type:
- * trash : collected trash
- * campaign / closed/ finding: a trash collection event
-datum:
-uhrzeit:
-veranstalter:
-beschreibung:
+funde: Object: Object with any amount of numerical items of garbage collected (e.g.
+"besteck": 2)
+muell-saecke: Number: amount collected
+muell: Number: amount collected
 
-url: external url to show details not in database (e.g. contacts) - if present,
-  it will try to open in an optional small iframe in the info box
+url: String: external url to show details not in database (e.g. contacts) - if
+  present, it will try to open in an optional small iframe in the info box
+  (currently unused)
 

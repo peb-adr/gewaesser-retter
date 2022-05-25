@@ -8,6 +8,12 @@ database. It contains an interactive map, and a list of summaries.
 ```
 yarn install
 ```
+Note: Currently (as of 2022-05) some indirectly installed packages may complain
+about a node version mismatch. A
+```
+yarn config set ignore-engines true
+```
+silences this error.
 
 ### Compiles and hot-reloads for development.
 
