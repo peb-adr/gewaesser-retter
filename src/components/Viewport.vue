@@ -120,6 +120,7 @@ export default {
   mounted() {
     this.$root.$on("update:error", (error) => this.showError(error));
     this.useFireBase();
+    window.addEventListener('resize', () => this.$root.$emit('resizeevent'));
   },
   computed: {
     filteredTrashData: {

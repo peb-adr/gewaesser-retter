@@ -77,8 +77,9 @@ export default {
     trashData() {
       this.buildData();
     },
-    tabChange() {
-      this.map.invalidateSize();
+    tabchange() {
+      //TODO: check how long the "tab is changin" event actually transitions.
+      setTimeout(() => this.$root.$emit('resizeevent'), 250);
     }
   },
 
@@ -130,7 +131,8 @@ export default {
       this.map.setView(content.latlng, zoom);
     });
     this.$root.$on('geolocateme',this.geolocateMe);
-    window.addEventListener('resize', () => this.map.invalidateSize());
+    this.$root.$on('resizeevent', () => {
+      this.map.invalidateSize()});
   },
 
   methods: {
@@ -305,8 +307,9 @@ export default {
 };
 </script>
 <style>
+
 .map {
-  height: 90vh;
+  height: 85vh;
 }
 
 .infomenu {
