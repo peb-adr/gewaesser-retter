@@ -83,6 +83,8 @@ import { initializeApp } from "firebase/app";
 import {
   getDatabase,
   ref,
+  get,
+  child,
   onChildAdded,
   onChildChanged,
   onChildRemoved,
@@ -121,6 +123,33 @@ export default {
     this.$root.$on("update:error", (error) => this.showError(error));
     this.useFireBase();
     window.addEventListener('resize', () => this.$root.$emit('resizeevent'));
+
+
+    // Zoom to Aktion in URL parameter if provided
+    let qParams = new URLSearchParams(window.location.search);
+    let uuid = qParams.get("uuid")
+    if (uuid == undefined) {
+      return
+    }
+    // check if exists in firebase
+    get(child(ref(this.db, "/data"), uuid)).then((snap) => {
+      if (snap.exists()) {
+        // if so, find in trashData
+        let results = this.trashData.filter(f => f.properties.uuidPublic === uuid)
+        if (results.length === 1) {
+          let i = results[0]
+          let coords = { lat: i.geometry.coordinates[1], lng: i.geometry.coordinates[0] }
+          this.updateItem(i)
+          this.$root.$emit("requestzoom", { latlng: coords });
+        } else {
+          this.$root.$emit("update:error", `${uuid} konnte keiner Aktion zugeordnet werden`);
+        }
+      } else {
+        this.$root.$emit("update:error", `${uuid} konnte keiner Aktion zugeordnet werden`);
+      }
+    }).catch(() => {
+      this.$root.$emit("update:error", `${uuid} konnte keiner Aktion zugeordnet werden`);
+    });
   },
   computed: {
     filteredTrashData: {
@@ -150,14 +179,14 @@ export default {
       this.infoItem = e;
       this.tab = 0;
     },
-      zoomToWorld() {
-  this.$root.$emit("requestzoom", {latlng: {lat: 51, lng: 10}, level: 5});
-  this.drawer = false;
-  },
-  geolocate() {
-    this.$root.$emit("geolocateme");
-    this.drawer = false;
-  },
+    zoomToWorld() {
+      this.$root.$emit("requestzoom", {latlng: {lat: 51, lng: 10}, level: 5});
+      this.drawer = false;
+    },
+    geolocate() {
+      this.$root.$emit("geolocateme");
+      this.drawer = false;
+    },
 
     showError(error) {
       this.snackbar = true;

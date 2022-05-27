@@ -33,7 +33,7 @@ export default {
   },
 
   // incoming properties (sent by the parent Viewport). trashData contains the
-  // geojson data and the full properteis of every item, the infoItem is the
+  // geojson data and the full properties of every item, the infoItem is the
   // currently selected one.
   props: {
     trashData: Array,

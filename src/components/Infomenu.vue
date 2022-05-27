@@ -1,9 +1,11 @@
 <template>
   <v-card v-if="item" elevation="5" class="infomenu-card">
     <h4>{{ item.aktionsname }}
-    <v-icon @click.stop="zoomTo()">
+      <a :href="item.placelink">(link)</a>
+      <v-icon @click.stop="zoomTo()">
           mdi-target
-        </v-icon></h4>
+      </v-icon>
+    </h4>
     <p v-if="item.veranstalter"><i>{{ item.veranstalter }} </i></p>
     {{ item.datum }}
     <span v-if="item.uhrzeit"> um {{ item.uhrzeit}} Uhr</span> <br />
@@ -31,7 +33,10 @@ export default {
   computed: {
     item: {
       get() {
-        return this.infoItem ? this.infoItem.properties : {};
+        if (!this.infoItem) { return {} }
+        let p = this.infoItem.properties;
+        p.placelink = `?uuid=${p.uuidPublic}`
+        return p;
       }
     }
   },
